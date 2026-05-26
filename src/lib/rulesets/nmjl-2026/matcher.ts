@@ -38,20 +38,20 @@ interface Assignment {
 
 function* enumerateSuits(
 	vars: SuitVar[],
-	min: number,
-	max: number
+	allowed: number[]
 ): Generator<Partial<Record<SuitVar, Suit>>> {
 	if (vars.length === 0) {
 		yield {};
 		return;
 	}
+	const allow = new Set(allowed);
 	function* rec(
 		i: number,
 		current: Partial<Record<SuitVar, Suit>>
 	): Generator<Partial<Record<SuitVar, Suit>>> {
 		if (i === vars.length) {
 			const distinct = new Set(Object.values(current));
-			if (distinct.size >= min && distinct.size <= max) yield { ...current };
+			if (allow.has(distinct.size)) yield { ...current };
 			return;
 		}
 		for (const s of ALL_SUITS) {
@@ -250,13 +250,17 @@ function scoreAgainstPlayer(
 		const filledFromPool = grp.size - grp.missingCount;
 		let fillFromJokers = 0;
 		let realNeed = grp.missingCount;
-		if (acceptsJoker) {
+		// A joker-eligible group with zero natural tiles isn't really "started" — we don't let
+		// jokers manufacture an entire suit out of nothing, which would let a hand with one
+		// dot tile score as if it were close to a 4-dot kong. Pairs and singles can never use
+		// jokers in the first place, so this only changes behavior for pung/kong/quint/sextet.
+		if (acceptsJoker && filledFromPool > 0) {
 			fillFromJokers = Math.min(grp.missingCount, jokersLeft);
 			jokersLeft -= fillFromJokers;
 			jokersUsed += fillFromJokers;
 			realNeed = grp.missingCount - fillFromJokers;
-			jokerSlotsRemaining += realNeed;
 		}
+		if (acceptsJoker) jokerSlotsRemaining += realNeed;
 		for (let i = 0; i < realNeed; i++) finalMissing.push(grp.tile);
 		if (realNeed > 0) {
 			const key = tileKey(grp.tile);
@@ -330,13 +334,12 @@ export function evaluateHand(hand: NMJLHand, state: GameState): TargetEvaluation
 	}
 
 	const { numVars, dragonVars, oppDragonGroups } = collectVars(hand.groups);
-	const suitRange = hand.constraints.distinctSuits ?? {
-		min: 0,
-		max: hand.constraints.suitVars.length
-	};
+	const suitAllowed =
+		hand.constraints.distinctSuits ??
+		Array.from({ length: hand.constraints.suitVars.length + 1 }, (_, i) => i);
 
 	let best: MatchScore | null = null;
-	for (const suits of enumerateSuits(hand.constraints.suitVars, suitRange.min, suitRange.max)) {
+	for (const suits of enumerateSuits(hand.constraints.suitVars, suitAllowed)) {
 		for (const nums of enumerateNums(numVars, hand.constraints.numberDomains ?? {})) {
 			for (const dragons of enumerateDragons(dragonVars)) {
 				for (const oppDragonChoice of enumerateOppDragons(oppDragonGroups, suits, hand)) {

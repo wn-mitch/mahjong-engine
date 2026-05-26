@@ -34,7 +34,7 @@ export interface Group {
 
 export interface NMJLConstraints {
 	suitVars: SuitVar[];
-	distinctSuits?: { min: number; max: number };
+	distinctSuits?: number[];
 	numberDomains?: Partial<Record<NumVar, number[]>>;
 	windDomain?: Wind[];
 	dragonsAllSame?: boolean;
@@ -108,7 +108,7 @@ const section2026: NMJLHand[] = [
 		pattern: '222 000 2222 6666',
 		suitConstraint: 'Any 2 Suits',
 		groups: [pung(num('A', 2)), pung(dr('white')), kong(num('B', 2)), kong(num('C', 6))],
-		constraints: { suitVars: ['A', 'B', 'C'], distinctSuits: { min: 2, max: 2 } },
+		constraints: { suitVars: ['A', 'B', 'C'], distinctSuits: [2] },
 		concealed: false,
 		value: 25,
 		jokerFriendly: true
@@ -129,7 +129,7 @@ const section2026: NMJLHand[] = [
 		],
 		constraints: {
 			suitVars: ['A', 'B'],
-			distinctSuits: { min: 2, max: 2 },
+			distinctSuits: [2],
 			numberDomains: { X: [2, 6] }
 		},
 		concealed: false,
@@ -149,7 +149,7 @@ const section2026: NMJLHand[] = [
 			pung(num('A', 2)),
 			kong(num('C', 6))
 		],
-		constraints: { suitVars: ['A', 'B', 'C'], distinctSuits: { min: 3, max: 3 } },
+		constraints: { suitVars: ['A', 'B', 'C'], distinctSuits: [3] },
 		concealed: false,
 		value: 25
 	}),
@@ -165,7 +165,7 @@ const section2026: NMJLHand[] = [
 			pung(num('B', 6)),
 			...NEWS
 		],
-		constraints: { suitVars: ['A', 'B'], distinctSuits: { min: 2, max: 2 } },
+		constraints: { suitVars: ['A', 'B'], distinctSuits: [2] },
 		concealed: false,
 		value: 25
 	})
@@ -180,7 +180,7 @@ const section2468: NMJLHand[] = [
 		pattern: '222 444 6666 8888',
 		suitConstraint: '1 or 2 Suits',
 		groups: [pung(num('A', 2)), pung(num('A', 4)), kong(num('B', 6)), kong(num('B', 8))],
-		constraints: { suitVars: ['A', 'B'], distinctSuits: { min: 1, max: 2 } },
+		constraints: { suitVars: ['A', 'B'], distinctSuits: [1, 2] },
 		concealed: false,
 		value: 25,
 		jokerFriendly: true
@@ -197,7 +197,7 @@ const section2468: NMJLHand[] = [
 			pair(num('B', 6)),
 			kong(num('B', 8))
 		],
-		constraints: { suitVars: ['A', 'B'], distinctSuits: { min: 2, max: 2 } },
+		constraints: { suitVars: ['A', 'B'], distinctSuits: [2] },
 		concealed: false,
 		value: 25
 	}),
@@ -216,7 +216,7 @@ const section2468: NMJLHand[] = [
 		],
 		constraints: {
 			suitVars: ['A'],
-			distinctSuits: { min: 1, max: 1 },
+			distinctSuits: [1],
 			windDomain: ['E', 'W']
 		},
 		concealed: false,
@@ -228,7 +228,7 @@ const section2468: NMJLHand[] = [
 		pattern: '2222 DDD 8888 DDD',
 		suitConstraint: '2 Suits w Matching Dragons',
 		groups: [kong(num('A', 2)), pung(dm('A')), kong(num('B', 8)), pung(dm('B'))],
-		constraints: { suitVars: ['A', 'B'], distinctSuits: { min: 2, max: 2 } },
+		constraints: { suitVars: ['A', 'B'], distinctSuits: [2] },
 		concealed: false,
 		value: 25,
 		jokerFriendly: true
@@ -245,7 +245,7 @@ const section2468: NMJLHand[] = [
 			pung(num('A', 6)),
 			kong(num('A', 8))
 		],
-		constraints: { suitVars: ['A'], distinctSuits: { min: 1, max: 1 } },
+		constraints: { suitVars: ['A'], distinctSuits: [1] },
 		concealed: false,
 		value: 25
 	}),
@@ -266,7 +266,7 @@ const section2468: NMJLHand[] = [
 		],
 		constraints: {
 			suitVars: ['A', 'B', 'C'],
-			distinctSuits: { min: 3, max: 3 },
+			distinctSuits: [3],
 			numberDomains: { X: [2, 4, 6, 8] }
 		},
 		concealed: false,
@@ -288,7 +288,7 @@ const section2468: NMJLHand[] = [
 		],
 		constraints: {
 			suitVars: ['A', 'B'],
-			distinctSuits: { min: 2, max: 2 },
+			distinctSuits: [2],
 			numberDomains: { X: [2, 4, 6, 8] }
 		},
 		concealed: false,
@@ -310,7 +310,7 @@ const section2468: NMJLHand[] = [
 			single(num('B', 6)),
 			pung(num('B', 8))
 		],
-		constraints: { suitVars: ['A', 'B'], distinctSuits: { min: 2, max: 2 } },
+		constraints: { suitVars: ['A', 'B'], distinctSuits: [2] },
 		concealed: true,
 		value: 30
 	})
@@ -327,7 +327,7 @@ const sectionLikeNumbers: NMJLHand[] = [
 		groups: [kong(nv('A', 'X')), sextet(fl()), kong(nv('B', 'X'))],
 		constraints: {
 			suitVars: ['A', 'B'],
-			distinctSuits: { min: 2, max: 2 },
+			distinctSuits: [2],
 			numberDomains: { X: [1, 2, 3, 4, 5, 6, 7, 8, 9] }
 		},
 		concealed: false,
@@ -349,7 +349,7 @@ const sectionLikeNumbers: NMJLHand[] = [
 		],
 		constraints: {
 			suitVars: ['A', 'B', 'C'],
-			distinctSuits: { min: 3, max: 3 },
+			distinctSuits: [3],
 			numberDomains: { X: [1, 2, 3, 4, 5, 6, 7, 8, 9] }
 		},
 		concealed: false,
@@ -369,7 +369,7 @@ const sectionLikeNumbers: NMJLHand[] = [
 		],
 		constraints: {
 			suitVars: ['A', 'B', 'C'],
-			distinctSuits: { min: 3, max: 3 },
+			distinctSuits: [3],
 			numberDomains: { X: [1, 2, 3, 4, 5, 6, 7, 8, 9] }
 		},
 		concealed: false,
@@ -388,7 +388,7 @@ const sectionQuints: NMJLHand[] = [
 		groups: [quint(nv('A', 'X')), kong(nv('B', 'X')), quint(nv('C', 'X'))],
 		constraints: {
 			suitVars: ['A', 'B', 'C'],
-			distinctSuits: { min: 3, max: 3 },
+			distinctSuits: [3],
 			numberDomains: { X: [1, 2, 3, 4, 5, 6, 7, 8, 9] }
 		},
 		concealed: false,
@@ -408,7 +408,7 @@ const sectionQuints: NMJLHand[] = [
 		],
 		constraints: {
 			suitVars: ['A'],
-			distinctSuits: { min: 1, max: 1 },
+			distinctSuits: [1],
 			numberDomains: { X: [1, 2, 3, 4, 5, 6, 7] }
 		},
 		concealed: false,
@@ -422,7 +422,7 @@ const sectionQuints: NMJLHand[] = [
 		groups: [quint(nv('A', 'X')), quint(nv('A', 'Y')), kong(dm('A', 'opp'))],
 		constraints: {
 			suitVars: ['A'],
-			distinctSuits: { min: 1, max: 1 },
+			distinctSuits: [1],
 			numberDomains: {
 				X: [1, 2, 3, 4, 5, 6, 7, 8, 9],
 				Y: [1, 2, 3, 4, 5, 6, 7, 8, 9]
@@ -453,7 +453,7 @@ const sectionConsec: NMJLHand[] = [
 		],
 		constraints: {
 			suitVars: ['A'],
-			distinctSuits: { min: 1, max: 1 },
+			distinctSuits: [1],
 			numberDomains: { X: [1, 5] }
 		},
 		concealed: false,
@@ -474,7 +474,7 @@ const sectionConsec: NMJLHand[] = [
 		],
 		constraints: {
 			suitVars: ['A', 'B'],
-			distinctSuits: { min: 1, max: 2 },
+			distinctSuits: [1, 2],
 			numberDomains: { X: [1, 2, 3, 4, 5] }
 		},
 		concealed: false,
@@ -494,7 +494,7 @@ const sectionConsec: NMJLHand[] = [
 		],
 		constraints: {
 			suitVars: ['A', 'B', 'C'],
-			distinctSuits: { min: 3, max: 3 },
+			distinctSuits: [3],
 			numberDomains: { X: [1, 2, 3, 4, 5, 6, 7] }
 		},
 		concealed: false,
@@ -513,7 +513,7 @@ const sectionConsec: NMJLHand[] = [
 		],
 		constraints: {
 			suitVars: ['A', 'B'],
-			distinctSuits: { min: 1, max: 2 },
+			distinctSuits: [1, 2],
 			numberDomains: { X: [1, 2, 3, 4, 5, 6] }
 		},
 		concealed: false,
@@ -534,7 +534,7 @@ const sectionConsec: NMJLHand[] = [
 		],
 		constraints: {
 			suitVars: ['A'],
-			distinctSuits: { min: 1, max: 2 },
+			distinctSuits: [1, 2],
 			numberDomains: { X: [1, 2, 3, 4, 5, 6, 7] }
 		},
 		concealed: false,
@@ -548,7 +548,7 @@ const sectionConsec: NMJLHand[] = [
 		groups: [kong(nv('A', 'X')), sextet(fl()), kong(nv('A', 'X', 1))],
 		constraints: {
 			suitVars: ['A'],
-			distinctSuits: { min: 1, max: 1 },
+			distinctSuits: [1],
 			numberDomains: { X: [1, 2, 3, 4, 5, 6, 7, 8] }
 		},
 		concealed: false,
@@ -568,7 +568,7 @@ const sectionConsec: NMJLHand[] = [
 		],
 		constraints: {
 			suitVars: ['A', 'B', 'C'],
-			distinctSuits: { min: 1, max: 3 },
+			distinctSuits: [1, 3],
 			numberDomains: { X: [1, 2, 3, 4, 5, 6, 7] }
 		},
 		concealed: false,
@@ -590,7 +590,7 @@ const sectionConsec: NMJLHand[] = [
 		],
 		constraints: {
 			suitVars: ['A', 'B', 'C'],
-			distinctSuits: { min: 3, max: 3 },
+			distinctSuits: [3],
 			numberDomains: { X: [1, 2, 3, 4, 5, 6] }
 		},
 		concealed: true,
@@ -613,7 +613,7 @@ const section13579: NMJLHand[] = [
 			pung(num('B', 7)),
 			kong(num('C', 9))
 		],
-		constraints: { suitVars: ['A', 'B', 'C'], distinctSuits: { min: 1, max: 3 } },
+		constraints: { suitVars: ['A', 'B', 'C'], distinctSuits: [1, 3] },
 		concealed: false,
 		value: 25
 	}),
@@ -630,7 +630,7 @@ const section13579: NMJLHand[] = [
 		],
 		constraints: {
 			suitVars: ['A', 'B'],
-			distinctSuits: { min: 2, max: 2 },
+			distinctSuits: [2],
 			numberDomains: { X: [1, 5] }
 		},
 		concealed: false,
@@ -651,7 +651,7 @@ const section13579: NMJLHand[] = [
 		],
 		constraints: {
 			suitVars: ['A'],
-			distinctSuits: { min: 1, max: 1 },
+			distinctSuits: [1],
 			windDomain: ['N', 'S'],
 			numberDomains: { X: [1, 5] }
 		},
@@ -675,7 +675,7 @@ const section13579: NMJLHand[] = [
 		],
 		constraints: {
 			suitVars: ['A', 'B', 'C'],
-			distinctSuits: { min: 3, max: 3 },
+			distinctSuits: [3],
 			numberDomains: { X: [1, 3, 5, 7, 9], Y: [1, 3, 5, 7, 9] }
 		},
 		concealed: false,
@@ -695,7 +695,7 @@ const section13579: NMJLHand[] = [
 		],
 		constraints: {
 			suitVars: ['A'],
-			distinctSuits: { min: 1, max: 1 },
+			distinctSuits: [1],
 			numberDomains: { X: [1, 5] }
 		},
 		concealed: false,
@@ -715,7 +715,7 @@ const section13579: NMJLHand[] = [
 		],
 		constraints: {
 			suitVars: ['A', 'B', 'C'],
-			distinctSuits: { min: 3, max: 3 },
+			distinctSuits: [3],
 			numberDomains: { X: [1, 5] }
 		},
 		concealed: false,
@@ -733,7 +733,7 @@ const section13579: NMJLHand[] = [
 			pair(num('B', 7)),
 			kong(num('B', 9))
 		],
-		constraints: { suitVars: ['A', 'B'], distinctSuits: { min: 1, max: 2 } },
+		constraints: { suitVars: ['A', 'B'], distinctSuits: [1, 2] },
 		concealed: false,
 		value: 25
 	}),
@@ -750,7 +750,7 @@ const section13579: NMJLHand[] = [
 			pung(num('B', 1)),
 			pung(num('C', 1))
 		],
-		constraints: { suitVars: ['A', 'B', 'C'], distinctSuits: { min: 3, max: 3 } },
+		constraints: { suitVars: ['A', 'B', 'C'], distinctSuits: [3] },
 		concealed: true,
 		value: 35
 	}),
@@ -768,7 +768,7 @@ const section13579: NMJLHand[] = [
 			pung(num('A', 9)),
 			pung(dm('A', 'opp'))
 		],
-		constraints: { suitVars: ['A'], distinctSuits: { min: 1, max: 1 } },
+		constraints: { suitVars: ['A'], distinctSuits: [1] },
 		concealed: true,
 		value: 30
 	})
@@ -802,7 +802,7 @@ const sectionWindsDragons: NMJLHand[] = [
 			pung(dr('green')),
 			kong(dr('white'))
 		],
-		constraints: { suitVars: ['A'], distinctSuits: { min: 1, max: 1 } },
+		constraints: { suitVars: ['A'], distinctSuits: [1] },
 		concealed: false,
 		value: 25
 	}),
@@ -814,7 +814,7 @@ const sectionWindsDragons: NMJLHand[] = [
 		groups: [pung(w('N')), kong(nv('A', 'X')), kong(nv('B', 'X')), pung(w('S'))],
 		constraints: {
 			suitVars: ['A', 'B'],
-			distinctSuits: { min: 2, max: 2 },
+			distinctSuits: [2],
 			numberDomains: { X: [1, 3, 5, 7, 9] }
 		},
 		concealed: false,
@@ -829,7 +829,7 @@ const sectionWindsDragons: NMJLHand[] = [
 		groups: [pung(w('E')), kong(nv('A', 'X')), kong(nv('B', 'X')), pung(w('W'))],
 		constraints: {
 			suitVars: ['A', 'B'],
-			distinctSuits: { min: 2, max: 2 },
+			distinctSuits: [2],
 			numberDomains: { X: [2, 4, 6, 8] }
 		},
 		concealed: false,
@@ -862,7 +862,7 @@ const sectionWindsDragons: NMJLHand[] = [
 			single(num('A', 4)),
 			kong(w('S'))
 		],
-		constraints: { suitVars: ['A'], distinctSuits: { min: 1, max: 1 } },
+		constraints: { suitVars: ['A'], distinctSuits: [1] },
 		concealed: false,
 		value: 25
 	}),
@@ -891,7 +891,7 @@ const sectionWindsDragons: NMJLHand[] = [
 			pung(w('W')),
 			pair(w('S'))
 		],
-		constraints: { suitVars: ['A'], distinctSuits: { min: 1, max: 1 } },
+		constraints: { suitVars: ['A'], distinctSuits: [1] },
 		concealed: true,
 		value: 30
 	})
@@ -906,7 +906,7 @@ const section369: NMJLHand[] = [
 		pattern: '333 666 6666 9999',
 		suitConstraint: '2 or 3 Suits',
 		groups: [pung(num('A', 3)), pung(num('B', 6)), kong(num('B', 6)), kong(num('C', 9))],
-		constraints: { suitVars: ['A', 'B', 'C'], distinctSuits: { min: 2, max: 3 } },
+		constraints: { suitVars: ['A', 'B', 'C'], distinctSuits: [2, 3] },
 		concealed: false,
 		value: 25,
 		jokerFriendly: true
@@ -923,7 +923,7 @@ const section369: NMJLHand[] = [
 			pung(num('B', 6)),
 			kong(num('C', 9))
 		],
-		constraints: { suitVars: ['A', 'B', 'C'], distinctSuits: { min: 3, max: 3 } },
+		constraints: { suitVars: ['A', 'B', 'C'], distinctSuits: [3] },
 		concealed: false,
 		value: 25
 	}),
@@ -939,7 +939,7 @@ const section369: NMJLHand[] = [
 			pair(num('A', 9)),
 			kong(dv('D1'))
 		],
-		constraints: { suitVars: ['A'], distinctSuits: { min: 1, max: 1 } },
+		constraints: { suitVars: ['A'], distinctSuits: [1] },
 		concealed: false,
 		value: 25
 	}),
@@ -955,7 +955,7 @@ const section369: NMJLHand[] = [
 			pung(num('B', 9)),
 			...NEWS
 		],
-		constraints: { suitVars: ['A', 'B'], distinctSuits: { min: 2, max: 2 } },
+		constraints: { suitVars: ['A', 'B'], distinctSuits: [2] },
 		concealed: false,
 		value: 25
 	}),
@@ -975,7 +975,7 @@ const section369: NMJLHand[] = [
 		],
 		constraints: {
 			suitVars: ['A', 'B', 'C'],
-			distinctSuits: { min: 3, max: 3 },
+			distinctSuits: [3],
 			numberDomains: { X: [3, 6, 9], Y: [3, 6, 9] }
 		},
 		concealed: false,
@@ -995,7 +995,7 @@ const section369: NMJLHand[] = [
 			single(num('B', 6)),
 			single(num('B', 9))
 		],
-		constraints: { suitVars: ['A', 'B'], distinctSuits: { min: 2, max: 2 } },
+		constraints: { suitVars: ['A', 'B'], distinctSuits: [2] },
 		concealed: true,
 		value: 30
 	})
