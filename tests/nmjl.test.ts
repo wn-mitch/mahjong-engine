@@ -234,6 +234,141 @@ describe('NMJL matcher — constraint enforcement', () => {
 		expect(found2468).toBeDefined();
 		expect(found2468!.completionScore).toBeLessThan(1);
 	});
+
+	// "1 or 3 Suits" is an exclusive set {1, 3} — 2 distinct suits must be rejected.
+	// Previously encoded as a min/max range, which silently accepted 2 distinct suits and let
+	// a 2-suit-dominant hand score artificially high on consec-7 / 13579-1.
+	it('rejects a 2-suit binding for consec-7 ("1 or 3 Suits")', () => {
+		// Bamboos + cracks foundation with no dots — the only way to win consec-7 here is the
+		// 1-suit cracks branch (slow). A 2-suit binding A=bamboo, B=C=crack would slot 12/14
+		// without the fix; under [1,3] it should be illegal entirely.
+		const hand: Tile[] = [
+			N('bamboo', 2),
+			N('bamboo', 2),
+			...repeat(N('crack', 3), 2),
+			...repeat(N('crack', 4), 2),
+			N('crack', 6),
+			N('crack', 8),
+			N('bamboo', 1),
+			N('dot', 6),
+			F(),
+			F(),
+			J()
+		];
+		const s = state(hand);
+		const found = nmjl2026.evaluateTargets(s).find((e) => e.target.id === 'consec-7');
+		expect(found).toBeDefined();
+		// 1-suit cracks branch maxes out around 7/14; the (illegal) 2-suit binding scored 9/14.
+		// Confirm we're below the 2-suit ceiling.
+		expect(found!.completionScore).toBeLessThan(9 / 14);
+	});
+
+	it('accepts a 1-suit binding for consec-7 ("1 or 3 Suits")', () => {
+		// Pure-crack consecutive 2-3-4 (X=2): pattern is FF 2222 3333 4444 — 6/12 nums plus FF.
+		const hand: Tile[] = [
+			F(),
+			F(),
+			N('crack', 2),
+			N('crack', 2),
+			N('crack', 3),
+			N('crack', 3),
+			N('crack', 4),
+			N('crack', 4),
+			N('crack', 5),
+			N('crack', 9),
+			N('crack', 7),
+			N('bamboo', 1),
+			N('dot', 9)
+		];
+		const s = state(hand);
+		const found = nmjl2026.evaluateTargets(s).find((e) => e.target.id === 'consec-7');
+		expect(found).toBeDefined();
+		// 2F + 2×2c + 2×3c + 2×4c = 8 naturals → 6 missing in joker-eligible kongs.
+		// Without the fix this should be reachable; with the fix the 1-suit binding still works.
+		expect(found!.completionScore).toBeGreaterThanOrEqual(8 / 14);
+	});
+
+	it('accepts a 3-suit binding for consec-7 ("1 or 3 Suits")', () => {
+		// One natural anchor in each of three suits — the genuine 3-suit branch.
+		const hand: Tile[] = [
+			F(),
+			F(),
+			N('crack', 1),
+			N('crack', 1),
+			N('bamboo', 2),
+			N('bamboo', 2),
+			N('dot', 3),
+			N('dot', 3),
+			N('crack', 7),
+			N('crack', 9),
+			N('bamboo', 8),
+			N('dot', 5),
+			N('dot', 7)
+		];
+		const s = state(hand);
+		const found = nmjl2026.evaluateTargets(s).find((e) => e.target.id === 'consec-7');
+		expect(found).toBeDefined();
+		// 2F + 2×1c + 2×2b + 2×3d = 8 filled across the 3-suit X=1 binding.
+		expect(found!.completionScore).toBeGreaterThanOrEqual(8 / 14);
+	});
+});
+
+describe('NMJL matcher — joker zero-foundation guard', () => {
+	// Jokers can substitute in pung/kong/quint/sextet, never in pairs or singles. But within
+	// the joker-eligible groups, a group with zero natural tiles isn't really "started" — we
+	// don't let a hand with no dots masquerade as nearly-complete on a 4-dot kong via jokers.
+
+	it('does not let jokers complete a kong over an empty foundation', () => {
+		// 4×3c + 4×4c + 2J + 2F + filler. The best consec-7 bindings (1-suit X=2 needs a
+		// 2c kong, X=3 needs a 5c kong) both have one kong with zero crack foundation.
+		// Without the guard, 2 jokers would fill 2 of the 4 empty slots → 12/14 ≈ 0.857.
+		// With the guard, those jokers cannot land in an empty foundation → 10/14 ≈ 0.714.
+		const hand: Tile[] = [
+			...repeat(N('crack', 3), 4),
+			...repeat(N('crack', 4), 4),
+			N('bamboo', 1),
+			J(),
+			J(),
+			F(),
+			F()
+		];
+		const s = state(hand);
+		const found = nmjl2026.evaluateTargets(s).find((e) => e.target.id === 'consec-7');
+		expect(found).toBeDefined();
+		expect(found!.completionScore).toBeLessThanOrEqual(10 / 14 + 1e-6);
+	});
+
+	it('still credits jokers when a kong has at least one natural anchor', () => {
+		// Same shape, but the anchored variant adds a single 2c — that gives the X=2 binding
+		// a foundation in every kong (2c=1, 3c=4, 4c=4), so jokers can extend the 2c kong
+		// normally. The anchored hand must score strictly better than the un-anchored one.
+		const empty: Tile[] = [
+			...repeat(N('crack', 3), 4),
+			...repeat(N('crack', 4), 4),
+			N('bamboo', 1),
+			J(),
+			J(),
+			F(),
+			F()
+		];
+		const anchored: Tile[] = [
+			...repeat(N('crack', 3), 4),
+			...repeat(N('crack', 4), 4),
+			N('crack', 2),
+			J(),
+			J(),
+			F(),
+			F()
+		];
+		const emptyScore = nmjl2026
+			.evaluateTargets(state(empty))
+			.find((e) => e.target.id === 'consec-7')!.completionScore;
+		const anchoredScore = nmjl2026
+			.evaluateTargets(state(anchored))
+			.find((e) => e.target.id === 'consec-7')!.completionScore;
+		expect(anchoredScore).toBeGreaterThan(emptyScore);
+		expect(anchoredScore).toBeGreaterThanOrEqual(13 / 14 - 1e-6);
+	});
 });
 
 describe('NMJL suggestDiscard', () => {
