@@ -2,6 +2,14 @@ import type { Tile } from './tiles';
 
 export type GamePhase = 'charleston' | 'play' | 'endgame';
 
+export type CharlestonDirection = 'right' | 'across' | 'left' | 'courtesy';
+
+export interface CharlestonPassRecord {
+	direction: CharlestonDirection;
+	sentTiles: Tile[];
+	receivedTiles: Tile[];
+}
+
 export interface Exposure {
 	owner: 'self' | 'left' | 'across' | 'right';
 	tiles: Tile[];
@@ -22,6 +30,7 @@ export interface GameState {
 		right: Exposure[];
 	};
 	discards: Tile[];
+	charleston: { passes: CharlestonPassRecord[] };
 	turnsRemaining?: number;
 }
 
@@ -30,6 +39,7 @@ export function emptyState(): GameState {
 		phase: 'charleston',
 		self: { hand: [], exposures: [] },
 		opponents: { left: [], across: [], right: [] },
-		discards: []
+		discards: [],
+		charleston: { passes: [] }
 	};
 }

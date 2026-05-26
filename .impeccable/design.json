@@ -1,0 +1,377 @@
+{
+	"schemaVersion": 2,
+	"generatedAt": "2026-05-26T07:30:00Z",
+	"title": "Design System: mahjong-engine",
+	"extensions": {
+		"colorMeta": {
+			"paper-white": {
+				"role": "neutral",
+				"displayName": "Paper White",
+				"canonical": "oklch(0.985 0.005 80)",
+				"tonalRamp": [
+					"oklch(0.15 0.012 80)",
+					"oklch(0.27 0.011 80)",
+					"oklch(0.40 0.010 80)",
+					"oklch(0.55 0.009 80)",
+					"oklch(0.70 0.008 80)",
+					"oklch(0.82 0.007 80)",
+					"oklch(0.92 0.006 80)",
+					"oklch(0.985 0.005 80)"
+				]
+			},
+			"aged-vellum": {
+				"role": "neutral",
+				"displayName": "Aged Vellum",
+				"canonical": "oklch(0.965 0.006 80)"
+			},
+			"bleached-paper": {
+				"role": "neutral",
+				"displayName": "Bleached Paper",
+				"canonical": "oklch(0.995 0.004 80)"
+			},
+			"ink-black": {
+				"role": "neutral",
+				"displayName": "Ink Black",
+				"canonical": "oklch(0.20 0.012 80)",
+				"tonalRamp": [
+					"oklch(0.15 0.012 80)",
+					"oklch(0.20 0.012 80)",
+					"oklch(0.30 0.012 80)",
+					"oklch(0.44 0.010 80)",
+					"oklch(0.55 0.009 80)",
+					"oklch(0.62 0.008 80)",
+					"oklch(0.78 0.010 80)",
+					"oklch(0.88 0.008 80)"
+				]
+			},
+			"pencil-gray": {
+				"role": "neutral",
+				"displayName": "Pencil Gray",
+				"canonical": "oklch(0.44 0.010 80)"
+			},
+			"margin-gray": {
+				"role": "neutral",
+				"displayName": "Margin Gray",
+				"canonical": "oklch(0.62 0.008 80)"
+			},
+			"ruled-line": {
+				"role": "neutral",
+				"displayName": "Ruled Line",
+				"canonical": "oklch(0.88 0.008 80)"
+			},
+			"heavy-rule": {
+				"role": "neutral",
+				"displayName": "Heavy Rule",
+				"canonical": "oklch(0.78 0.010 80)"
+			},
+			"bookmark-indigo": {
+				"role": "primary",
+				"displayName": "Bookmark Indigo",
+				"canonical": "oklch(0.46 0.11 252)",
+				"tonalRamp": [
+					"oklch(0.18 0.12 252)",
+					"oklch(0.26 0.11 252)",
+					"oklch(0.32 0.10 252)",
+					"oklch(0.40 0.11 252)",
+					"oklch(0.46 0.11 252)",
+					"oklch(0.60 0.10 252)",
+					"oklch(0.78 0.08 252)",
+					"oklch(0.93 0.04 252)"
+				]
+			},
+			"tinted-vellum-indigo": {
+				"role": "primary",
+				"displayName": "Tinted Vellum Indigo",
+				"canonical": "oklch(0.93 0.04 252)"
+			},
+			"marginal-note-indigo": {
+				"role": "primary",
+				"displayName": "Marginal Note Indigo",
+				"canonical": "oklch(0.32 0.10 252)"
+			},
+			"marginalia-green": {
+				"role": "secondary",
+				"displayName": "Marginalia Green",
+				"canonical": "oklch(0.55 0.07 145)",
+				"tonalRamp": [
+					"oklch(0.20 0.09 145)",
+					"oklch(0.30 0.10 145)",
+					"oklch(0.40 0.10 145)",
+					"oklch(0.46 0.13 145)",
+					"oklch(0.55 0.07 145)",
+					"oklch(0.70 0.06 145)",
+					"oklch(0.85 0.04 145)",
+					"oklch(0.94 0.03 145)"
+				]
+			},
+			"tinted-vellum-green": {
+				"role": "secondary",
+				"displayName": "Tinted Vellum Green",
+				"canonical": "oklch(0.94 0.03 145)"
+			},
+			"crack-red": {
+				"role": "tile-domain",
+				"displayName": "Crack Red",
+				"canonical": "oklch(0.50 0.16 25)",
+				"tonalRamp": [
+					"oklch(0.20 0.10 25)",
+					"oklch(0.30 0.13 25)",
+					"oklch(0.40 0.15 25)",
+					"oklch(0.50 0.16 25)",
+					"oklch(0.62 0.14 25)",
+					"oklch(0.75 0.10 25)",
+					"oklch(0.87 0.06 25)",
+					"oklch(0.95 0.02 25)"
+				]
+			},
+			"bamboo-green": {
+				"role": "tile-domain",
+				"displayName": "Bamboo Green",
+				"canonical": "oklch(0.46 0.13 145)",
+				"tonalRamp": [
+					"oklch(0.20 0.09 145)",
+					"oklch(0.30 0.11 145)",
+					"oklch(0.40 0.13 145)",
+					"oklch(0.46 0.13 145)",
+					"oklch(0.58 0.11 145)",
+					"oklch(0.72 0.08 145)",
+					"oklch(0.86 0.05 145)",
+					"oklch(0.95 0.02 145)"
+				]
+			},
+			"dot-indigo": {
+				"role": "tile-domain",
+				"displayName": "Dot Indigo",
+				"canonical": "oklch(0.38 0.09 245)",
+				"tonalRamp": [
+					"oklch(0.18 0.08 245)",
+					"oklch(0.28 0.09 245)",
+					"oklch(0.38 0.09 245)",
+					"oklch(0.50 0.10 245)",
+					"oklch(0.62 0.09 245)",
+					"oklch(0.75 0.06 245)",
+					"oklch(0.86 0.04 245)",
+					"oklch(0.95 0.02 245)"
+				]
+			},
+			"petal-pink": {
+				"role": "tile-domain",
+				"displayName": "Petal Pink",
+				"canonical": "oklch(0.55 0.08 30)"
+			},
+			"joker-violet": {
+				"role": "tile-domain",
+				"displayName": "Joker Violet",
+				"canonical": "oklch(0.30 0.04 305)"
+			}
+		},
+		"typographyMeta": {
+			"display": {
+				"displayName": "Display",
+				"purpose": "Winning-hand verdict only. Appears once, only when isWinningHand returns true."
+			},
+			"headline": {
+				"displayName": "Headline",
+				"purpose": "Engine suggestion text in the sticky bar."
+			},
+			"title": {
+				"displayName": "Title",
+				"purpose": "Region labels and panel headings (Your hand, Ranked targets)."
+			},
+			"body": {
+				"displayName": "Body",
+				"purpose": "Target descriptions and general prose. Rare in this UI."
+			},
+			"label": {
+				"displayName": "Label",
+				"purpose": "Uppercase structural captions (RULESET, NEEDS, WORKING TOWARD). Letter-spacing 0.1em carries the cue."
+			},
+			"numeric": {
+				"displayName": "Numeric",
+				"purpose": "Scores, counts, rank digits. Always uses tabular-nums."
+			},
+			"cjk": {
+				"displayName": "CJK Suit Glyphs",
+				"purpose": "Tile suit-marks (萬 / 索 / 筒) and dragon characters (中 / 發). Scoped to .cjk class only."
+			},
+			"mono": {
+				"displayName": "Mono",
+				"purpose": "Joker JKR stamp and the position JSON textarea."
+			}
+		},
+		"shadows": [
+			{
+				"name": "suggested-tile-glow",
+				"value": "0 0 0 2px oklch(0.46 0.11 252), 0 8px 18px -10px oklch(0.46 0.11 252 / 0.55)",
+				"purpose": "Engine's suggested discard tile only. The single 'shadow' in the system; everything else is flat."
+			},
+			{
+				"name": "focused-slot-ring",
+				"value": "0 0 0 2px oklch(0.46 0.11 252 / 0.18)",
+				"purpose": "Inner ring on the currently-focused TileSlot, paired with solid border swap."
+			},
+			{
+				"name": "needed-tile-ring",
+				"value": "0 0 0 1.5px oklch(0.55 0.07 145)",
+				"purpose": "Marginalia Green ring on tiles the top target still needs."
+			},
+			{
+				"name": "chip-selected-lift",
+				"value": "0 1px 2px oklch(0 0 0 / 0.04)",
+				"purpose": "Barely-there lift under a selected chip in the segmented control. Almost invisible — the tonal swap is the real signal."
+			}
+		],
+		"motion": [
+			{
+				"name": "ease-out-quart",
+				"value": "cubic-bezier(0.25, 1, 0.5, 1)",
+				"purpose": "Default easing for tile state changes, hover, and slot focus."
+			},
+			{
+				"name": "ease-out-quint",
+				"value": "cubic-bezier(0.22, 1, 0.36, 1)",
+				"purpose": "Slightly more emphatic ease. Reserved for engine-suggestion entrances."
+			},
+			{
+				"name": "ease-out-expo",
+				"value": "cubic-bezier(0.16, 1, 0.3, 1)",
+				"purpose": "Most emphatic ease. Reserved for win-state transitions."
+			},
+			{
+				"name": "duration-snap",
+				"value": "150ms",
+				"purpose": "Hover and color shifts."
+			},
+			{
+				"name": "duration-glance",
+				"value": "200ms",
+				"purpose": "Tile state changes, focused-slot transitions."
+			},
+			{
+				"name": "duration-deliberate",
+				"value": "300ms",
+				"purpose": "Score-bar width changes; the engine 're-thinking' after a pin or edit."
+			}
+		],
+		"breakpoints": [
+			{
+				"name": "narrow",
+				"value": "720px"
+			},
+			{
+				"name": "wide",
+				"value": "960px"
+			}
+		]
+	},
+	"components": [
+		{
+			"name": "Tile (number)",
+			"kind": "custom",
+			"refersTo": "tile-face",
+			"description": "The signature component. A flat 2D mahjong tile face — large numeral + CJK suit-mark below. Information, not button.",
+			"html": "<span class=\"ds-tile ds-tile-number ds-suit-crack\" role=\"img\" aria-label=\"5 cracks\"><span class=\"ds-tile-rank\">5</span><span class=\"ds-tile-suit\">萬</span></span>",
+			"css": ".ds-tile { display: inline-flex; flex-direction: column; align-items: center; justify-content: space-between; width: 42px; height: 56px; background: oklch(0.995 0.004 80); border: 1px solid oklch(0.88 0.008 80); border-radius: 6px; user-select: none; padding: 0; transition: box-shadow 200ms cubic-bezier(0.25, 1, 0.5, 1), border-color 200ms cubic-bezier(0.25, 1, 0.5, 1); font-family: 'Inter Tight', 'Inter', system-ui, sans-serif; } .ds-tile-rank { font-size: 22px; font-weight: 600; line-height: 1; letter-spacing: -0.02em; margin-top: 5px; font-feature-settings: 'tnum', 'ss01'; } .ds-tile-suit { font-family: 'PingFang SC', 'Hiragino Sans GB', 'Source Han Sans SC', 'Noto Sans CJK SC', sans-serif; font-size: 13px; font-weight: 500; line-height: 1; opacity: 0.85; margin-bottom: 5px; } .ds-suit-crack .ds-tile-rank, .ds-suit-crack .ds-tile-suit { color: oklch(0.50 0.16 25); } .ds-suit-bamboo .ds-tile-rank, .ds-suit-bamboo .ds-tile-suit { color: oklch(0.46 0.13 145); } .ds-suit-dot .ds-tile-rank, .ds-suit-dot .ds-tile-suit { color: oklch(0.38 0.09 245); }"
+		},
+		{
+			"name": "Tile (suggested discard)",
+			"kind": "custom",
+			"refersTo": "tile-suggested",
+			"description": "A tile being pointed at by the engine. Same face as a regular tile — the ring and lift do all the signalling.",
+			"html": "<span class=\"ds-tile ds-tile-suggested ds-suit-crack\" role=\"img\" aria-label=\"7 cracks, engine suggests discarding\"><span class=\"ds-tile-rank\">7</span><span class=\"ds-tile-suit\">萬</span></span>",
+			"css": ".ds-tile-suggested { box-shadow: 0 0 0 2px oklch(0.46 0.11 252), 0 8px 18px -10px oklch(0.46 0.11 252 / 0.55); transform: translateY(-3px); } @media (prefers-reduced-motion: reduce) { .ds-tile-suggested { transform: none; } }"
+		},
+		{
+			"name": "TileSlot (focused)",
+			"kind": "custom",
+			"refersTo": "tile-slot-focused",
+			"description": "Dashed placeholder where a tile could go. Becomes solid + tinted when focused — the visual target for palette clicks.",
+			"html": "<button type=\"button\" class=\"ds-slot ds-slot-focused\" aria-label=\"add tile\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\" width=\"16\" height=\"16\"><path d=\"M8 3 L8 13 M3 8 L13 8\" stroke=\"currentColor\" stroke-width=\"1.4\" stroke-linecap=\"round\" /></svg></button>",
+			"css": ".ds-slot { display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 56px; background: transparent; border: 1px dashed oklch(0.78 0.010 80); border-radius: 6px; color: oklch(0.62 0.008 80); cursor: pointer; padding: 0; transition: border-color 200ms cubic-bezier(0.25, 1, 0.5, 1), color 200ms cubic-bezier(0.25, 1, 0.5, 1), background-color 200ms cubic-bezier(0.25, 1, 0.5, 1); } .ds-slot:hover { border-color: oklch(0.46 0.11 252); color: oklch(0.46 0.11 252); background: oklch(0.93 0.04 252); } .ds-slot-focused { border-style: solid; border-color: oklch(0.46 0.11 252); color: oklch(0.46 0.11 252); background: oklch(0.93 0.04 252); box-shadow: 0 0 0 2px oklch(0.46 0.11 252 / 0.18); } .ds-slot svg { width: 40%; height: 40%; opacity: 0.7; }"
+		},
+		{
+			"name": "Chip (segmented control)",
+			"kind": "chip",
+			"refersTo": "chip-selected",
+			"description": "Segmented selector for ruleset and phase. The selected chip pops via tonal swap, not color.",
+			"html": "<div class=\"ds-chip-row\" role=\"radiogroup\"><button type=\"button\" class=\"ds-chip ds-chip-on\" role=\"radio\" aria-checked=\"true\">NMJL 2026</button><button type=\"button\" class=\"ds-chip\" role=\"radio\" aria-checked=\"false\">Chinese traditional</button></div>",
+			"css": ".ds-chip-row { display: inline-flex; gap: 2px; padding: 2px; background: oklch(0.965 0.006 80); border-radius: 999px; border: 1px solid oklch(0.88 0.008 80); font-family: 'Inter Tight', 'Inter', system-ui, sans-serif; } .ds-chip { font-size: 0.8125rem; padding: 0.25rem 0.75rem; border: 0; border-radius: 999px; color: oklch(0.44 0.010 80); font-weight: 500; background: transparent; cursor: pointer; transition: background-color 180ms cubic-bezier(0.25, 1, 0.5, 1), color 180ms cubic-bezier(0.25, 1, 0.5, 1); } .ds-chip:hover { color: oklch(0.20 0.012 80); } .ds-chip:focus-visible { outline: 2px solid oklch(0.46 0.11 252); outline-offset: 2px; } .ds-chip-on { background: oklch(0.995 0.004 80); color: oklch(0.20 0.012 80); box-shadow: 0 1px 2px oklch(0 0 0 / 0.04); }"
+		},
+		{
+			"name": "Panel",
+			"kind": "card",
+			"refersTo": "panel",
+			"description": "The default surface for grouping content. Hairline-bordered, paper-toned. Never nested.",
+			"html": "<section class=\"ds-panel\"><header class=\"ds-panel-header\"><span class=\"ds-region-dot\" aria-hidden=\"true\"></span><h2>Ranked targets</h2></header><div>Panel content lives here.</div></section>",
+			"css": ".ds-panel { background: oklch(0.995 0.004 80); border: 1px solid oklch(0.88 0.008 80); border-radius: 10px; padding: 1rem; font-family: 'Inter Tight', 'Inter', system-ui, sans-serif; color: oklch(0.20 0.012 80); } .ds-panel-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; } .ds-panel-header h2 { margin: 0; font-size: 1rem; font-weight: 600; letter-spacing: -0.01em; } .ds-region-dot { width: 6px; height: 6px; border-radius: 50%; background: oklch(0.62 0.008 80); display: inline-block; }"
+		},
+		{
+			"name": "Ranked Target Row",
+			"kind": "custom",
+			"refersTo": "panel",
+			"description": "Signature reasoning row: rank, description, hairline completion bar, score, needed-tile glyphs. Row, not card.",
+			"html": "<li class=\"ds-target-row ds-target-top\"><button type=\"button\" class=\"ds-target-button\"><span class=\"ds-target-rank\">1</span><div class=\"ds-target-meta\"><span class=\"ds-target-pattern\">2026 DDD 2222 DDD — 2 Suits</span><span class=\"ds-target-rationale\">needs 6 tiles · 5 joker slots</span></div><div class=\"ds-target-score\"><span class=\"ds-target-bar\" style=\"--fill: 57%\"></span><span class=\"ds-target-num\">0.57</span></div></button></li>",
+			"css": ".ds-target-row { position: relative; padding: 0.75rem 0; border-bottom: 1px solid oklch(0.88 0.008 80); list-style: none; font-family: 'Inter Tight', 'Inter', system-ui, sans-serif; } .ds-target-row::before { content: ''; position: absolute; left: -8px; top: 0.75rem; width: 3px; height: 12px; border-radius: 1.5px; background: transparent; transition: background-color 200ms cubic-bezier(0.25, 1, 0.5, 1); } .ds-target-top::before { background: oklch(0.93 0.04 252); } .ds-target-pinned::before { background: oklch(0.46 0.11 252); } .ds-target-button { display: grid; grid-template-columns: 1.6rem 1fr auto; align-items: center; gap: 0.75rem; width: 100%; text-align: left; padding: 0; background: none; border: 0; cursor: pointer; color: inherit; } .ds-target-rank { font-size: 0.8125rem; color: oklch(0.62 0.008 80); font-weight: 600; font-variant-numeric: tabular-nums; } .ds-target-top .ds-target-rank { color: oklch(0.32 0.10 252); } .ds-target-meta { display: grid; gap: 2px; min-width: 0; } .ds-target-pattern { font-size: 1rem; font-weight: 500; color: oklch(0.20 0.012 80); letter-spacing: -0.005em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .ds-target-rationale { font-size: 0.6875rem; color: oklch(0.44 0.010 80); font-style: italic; } .ds-target-score { display: grid; grid-template-columns: 60px auto; align-items: center; gap: 0.5rem; } .ds-target-bar { position: relative; display: block; height: 1px; background: oklch(0.88 0.008 80); overflow: hidden; } .ds-target-bar::after { content: ''; position: absolute; left: 0; top: -1px; height: 3px; width: var(--fill, 0%); background: oklch(0.20 0.012 80); border-radius: 1.5px; transition: width 300ms cubic-bezier(0.25, 1, 0.5, 1); } .ds-target-top .ds-target-bar::after { background: oklch(0.46 0.11 252); } .ds-target-num { font-size: 0.8125rem; color: oklch(0.44 0.010 80); font-weight: 600; font-variant-numeric: tabular-nums; } .ds-target-top .ds-target-num { color: oklch(0.32 0.10 252); }"
+		},
+		{
+			"name": "Button (primary)",
+			"kind": "button",
+			"refersTo": "button-primary",
+			"description": "The single bold action: 'apply' in the JSON editor. Bookmark Indigo only appears here outside engine signals.",
+			"html": "<button type=\"button\" class=\"ds-btn-primary\">apply</button>",
+			"css": ".ds-btn-primary { font-size: 0.8125rem; padding: 0.5rem 1rem; border: 0; border-radius: 999px; font-weight: 500; color: oklch(0.985 0.005 80); background: oklch(0.46 0.11 252); cursor: pointer; font-family: 'Inter Tight', 'Inter', system-ui, sans-serif; transition: background-color 180ms cubic-bezier(0.25, 1, 0.5, 1); } .ds-btn-primary:hover { background: oklch(0.32 0.10 252); } .ds-btn-primary:focus-visible { outline: 2px solid oklch(0.46 0.11 252); outline-offset: 2px; }"
+		},
+		{
+			"name": "Link (marginalia action)",
+			"kind": "button",
+			"refersTo": "link",
+			"description": "Utility actions like 'load sample / reset / position JSON'. Reads as marginalia, not as a button.",
+			"html": "<button type=\"button\" class=\"ds-link\">load sample</button>",
+			"css": ".ds-link { font-size: 0.6875rem; color: oklch(0.44 0.010 80); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; padding: 2px 0; background: none; border: 0; cursor: pointer; font-family: 'Inter Tight', 'Inter', system-ui, sans-serif; transition: color 180ms cubic-bezier(0.25, 1, 0.5, 1); } .ds-link:hover { color: oklch(0.46 0.11 252); }"
+		}
+	],
+	"narrative": {
+		"northStar": "The Reading Room",
+		"overview": "This is the visual language of a study tool, not an app. Imagine a quiet table with a single lamp: the NMJL 2026 card spread open, a notebook beside it, and the player working through a position they want to understand. The page is the table. Mahjong tiles are the only loud elements; everything else is the table around them — paper-tinted surfaces, hairline rules, restrained type. The accent color is a single bookmark slipped between pages, used sparingly and on purpose: where the engine wants to point, not for decoration.\n\nThe system rejects three families explicitly. It rejects casino chrome (gambling-table green, gold trim, Vegas typography) — this is study, not play. It rejects toy-mahjong solitaire aesthetics (bright primaries, cartoon faces, confetti) — the user already knows the game; we don't talk down to them. And it rejects the generic SaaS dashboard (metric cards with up-arrows, gradient KPIs, hero-stat grids) — there are no KPIs here, only positions to read. When in doubt, the question is 'what would a paper card-and-notebook setup do?' The answer is usually less.",
+		"keyCharacteristics": [
+			"Paper-tinted neutrals: every surface tinted toward hue 80 at chroma 0.004–0.010.",
+			"Hairlines do structural work; thicker means state, not decoration.",
+			"Tile glyphs as typography, rendered with canonical CJK suit characters (萬 / 索 / 筒).",
+			"The accent is a bookmark — Bookmark Indigo on ≤10% of any screen.",
+			"Asymmetric rhythm — the hand row breathes; peripheral regions cluster tighter."
+		],
+		"rules": [
+			{ "name": "The One Voice Rule", "body": "Bookmark Indigo is signal, never decoration. It appears in exactly four places: the engine's suggested-discard ring, the pinned target's left-edge segment, keyboard focus outlines, and the primary button. If you find yourself reaching for it elsewhere, you're doing decoration — stop and use neutral.", "section": "colors" },
+			{ "name": "The Tile-Domain Rule", "body": "Suit colors (Crack Red, Bamboo Green, Dot Indigo) and dragon colors live only inside tile glyphs. They never appear in chrome — no green panels, no red labels, no indigo backgrounds.", "section": "colors" },
+			{ "name": "The Tinted-Warm Rule", "body": "Every neutral is tinted toward hue 80 at chroma 0.004–0.010. Never #fff, never #000, never an untinted gray.", "section": "colors" },
+			{ "name": "The Italic-Is-Whisper Rule", "body": "Italics are used only for the soft voice of the page: hints, empty-state messages, the engine's prose rationale. Never use italics for emphasis — emphasis goes to weight contrast.", "section": "typography" },
+			{ "name": "The Numerals-Align Rule", "body": "Anywhere numerals stack (scores, counts, ranks), use tabular-nums. The columns are doing work; misaligned digits look like rounding errors.", "section": "typography" },
+			{ "name": "The Flat-By-Default Rule", "body": "Surfaces are flat at rest. No drop shadows, no inset shadows, no gradient overlays. If you reach for a shadow, the answer is almost always a tone change or a hairline.", "section": "elevation" },
+			{ "name": "The Ring-Not-Lift Rule", "body": "State (selected, focused, suggested) renders as a ring outside the element. The element's own face never changes. This keeps tiles especially readable: a suggested tile is still the same tile, just pointed at.", "section": "elevation" }
+		],
+		"dos": [
+			"Do keep every neutral tinted toward hue 80 at chroma 0.004–0.010. The paper feel depends on consistency.",
+			"Do use Bookmark Indigo only as engine signal: suggested discard, pinned target, focus ring, primary button. ≤10% of any screen.",
+			"Do render tiles as flat 2D faces with CJK suit-marks (萬 / 索 / 筒). The canonical glyphs are the cultural artifact; that's why they're loud.",
+			"Do let hairlines (1px Ruled Line) do structural work. Thicker means state, never decoration.",
+			"Do render state (selected, focused, suggested) as a ring outside the element. The element's face never changes.",
+			"Do layer with tone (Aged Vellum / Paper White / Bleached Paper) before reaching for any shadow.",
+			"Do use tabular-nums anywhere numerals stack. Scores, counts, ranks must align column-wise.",
+			"Do reserve italics for the soft voice — hints, empty states, the engine's prose rationale. Never italics for emphasis."
+		],
+		"donts": [
+			"Don't use #fff or #000. Every neutral is tinted-warm OKLCH.",
+			"Don't use suit colors (Crack Red, Bamboo Green, Dot Indigo) on chrome. They live inside tile glyphs only.",
+			"Don't add drop shadows for ambient elevation. Use tone change or hairline. The only 'shadow' in the system is the suggested-tile glow.",
+			"Don't wrap regions in cards. Most things don't need a container; a region label and some space is usually enough.",
+			"Don't nest panels. A panel inside a panel is always wrong.",
+			"Don't use border-left or border-right greater than 1px as a colored accent. Pinned targets get a 3px corner segment, not a side stripe.",
+			"Don't use gradient text (background-clip: text with a gradient background). Emphasis through weight or size, never gradients.",
+			"Don't reach for SaaS-dashboard metric cards (big number + label + up-arrow delta). Completion scores are hairline bars, not KPI tiles.",
+			"Don't style this like a casino app: no felt-green tables, no gold trim, no Vegas typography. This is a Reading Room, not a gambling table.",
+			"Don't style this like a toy mahjong solitaire app: no bright primaries, no cartoon tile faces, no confetti on win. The user is studying, not playing.",
+			"Don't style this like Stockfish chess analyzers: the framing is inspirational, the aesthetic isn't. No arrow overlays, no board-geometry visualizations.",
+			"Don't decorate with Asian-pastiche flourishes (bamboo backgrounds, dragon frames, calligraphic display fonts). The tiles already are the cultural artifact; surrounding them in cosplay cheapens them."
+		]
+	}
+}

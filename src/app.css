@@ -1,0 +1,112 @@
+@import 'tailwindcss';
+
+@theme {
+	--color-bg: oklch(0.985 0.005 80);
+	--color-bg-sunk: oklch(0.965 0.006 80);
+	--color-bg-raised: oklch(0.995 0.004 80);
+
+	--color-ink: oklch(0.2 0.012 80);
+	--color-ink-soft: oklch(0.44 0.01 80);
+	--color-ink-faint: oklch(0.62 0.008 80);
+
+	--color-line: oklch(0.88 0.008 80);
+	--color-line-strong: oklch(0.78 0.01 80);
+
+	--color-accent: oklch(0.46 0.11 252);
+	--color-accent-soft: oklch(0.93 0.04 252);
+	--color-accent-ink: oklch(0.32 0.1 252);
+
+	--color-need: oklch(0.55 0.07 145);
+	--color-need-soft: oklch(0.94 0.03 145);
+
+	--color-suit-crack: oklch(0.5 0.16 25);
+	--color-suit-bamboo: oklch(0.46 0.13 145);
+	--color-suit-dot: oklch(0.38 0.09 245);
+
+	--color-dragon-red: oklch(0.5 0.16 25);
+	--color-dragon-green: oklch(0.46 0.13 145);
+
+	--color-flower: oklch(0.55 0.08 30);
+	--color-joker: oklch(0.3 0.04 305);
+
+	--color-joker-bg: oklch(0.96 0.012 305);
+	--color-flower-bg: oklch(0.97 0.008 30);
+
+	--color-error: oklch(0.5 0.16 25);
+
+	--text-xs: 0.6875rem;
+	--text-sm: 0.8125rem;
+	--text-base: 1rem;
+	--text-lg: 1.25rem;
+	--text-xl: 1.5625rem;
+	--text-2xl: 1.953rem;
+	--text-3xl: 2.441rem;
+
+	--radius-tile: 6px;
+	--radius-panel: 10px;
+	--radius-chip: 999px;
+
+	--ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+	--ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+	--ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+	--breakpoint-sm: 720px;
+	--breakpoint-md: 960px;
+	--breakpoint-lg: 1180px;
+
+	--font-sans:
+		'Inter Tight', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+	--font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+	--font-cjk:
+		'PingFang SC', 'Hiragino Sans GB', 'Source Han Sans SC', 'Noto Sans CJK SC',
+		sans-serif;
+}
+
+@layer base {
+	:root {
+		color-scheme: light;
+	}
+
+	html,
+	body {
+		margin: 0;
+		padding: 0;
+		background: var(--color-bg);
+		color: var(--color-ink);
+		font-family: var(--font-sans);
+		font-size: var(--text-base);
+		line-height: 1.5;
+		font-feature-settings: 'ss01', 'cv11';
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+	}
+
+	button {
+		font: inherit;
+		color: inherit;
+		background: none;
+		border: 0;
+		padding: 0;
+		cursor: pointer;
+	}
+
+	button:focus-visible {
+		outline: 2px solid var(--color-accent);
+		outline-offset: 2px;
+		border-radius: 4px;
+	}
+
+	::selection {
+		background: var(--color-accent-soft);
+		color: var(--color-accent-ink);
+	}
+}
+
+@utility numeric {
+	font-variant-numeric: tabular-nums;
+	font-feature-settings: 'tnum';
+}
+
+@utility cjk {
+	font-family: var(--font-cjk);
+}

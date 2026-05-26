@@ -1,5 +1,7 @@
 import type { GameState } from '../../engine/gameState';
 import type {
+	CharlestonDirection,
+	CharlestonPassSuggestion,
 	Ruleset,
 	TargetEvaluation,
 	TargetHand,
@@ -21,6 +23,13 @@ export class ChineseTraditionalRuleset implements Ruleset {
 
 	suggestDiscard(_state: GameState, _target?: TargetHand): TileSuggestion {
 		return { discard: null, rationale: 'not implemented' };
+	}
+
+	suggestCharlestonPass(
+		_state: GameState,
+		_direction: CharlestonDirection
+	): CharlestonPassSuggestion {
+		return { tiles: [], rationale: 'not implemented' };
 	}
 }
 
