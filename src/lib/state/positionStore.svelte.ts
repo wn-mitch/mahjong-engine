@@ -362,7 +362,34 @@ export function createPositionStore() {
 			if (idx >= 0) pool.splice(idx, 1);
 		}
 		shuffleInPlace(pool);
-		charlestonReceived = pool.slice(0, desiredCount);
+
+		// Deal a plausible 13-tile opponent hand from the unseen pool and ask the same engine
+		// the bots use what that opponent would pass in this direction. This is why the
+		// simulation no longer hands you a joker (illegal to pass) or a flower (the brain never
+		// sheds one) — the old version drew uniformly from the pool and did neither.
+		const oppHand = pool.slice(0, Math.min(13, pool.length));
+		const oppState: GameState = {
+			phase: 'charleston',
+			self: { hand: oppHand, exposures: [] },
+			opponents: { left: [], across: [], right: [] },
+			discards: [],
+			charleston: { passes: [] }
+		};
+		let passed: Tile[] = [];
+		try {
+			passed = [...ruleset.suggestCharlestonPass(oppState, direction).tiles];
+		} catch {
+			passed = [];
+		}
+		// If the brain under-fills (nearly everything guarded), top up from the opponent hand —
+		// never with a joker.
+		for (const t of oppHand) {
+			if (passed.length >= desiredCount) break;
+			if (t.kind === 'joker') continue;
+			if (passed.includes(t)) continue;
+			passed.push(t);
+		}
+		charlestonReceived = passed.slice(0, desiredCount).map((t) => $state.snapshot(t));
 	}
 
 	function clearCharlestonBuffers() {
