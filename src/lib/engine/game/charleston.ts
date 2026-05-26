@@ -124,6 +124,60 @@ export function charlestonPass(
 	};
 }
 
+// The optional courtesy pass: a pairwise *across* exchange of 0–3 tiles. Unlike
+// `charlestonPass` (one direction, exactly three per seat), each across-pair (0↔2, 1↔3)
+// trades the same count, but the two pairs may trade different counts. `picks[s]` is the
+// tiles seat `s` sends; its receiver is the seat across (offset 2). Validates equal counts
+// within each pair, then removes-all-then-distributes like `charlestonPass` so a seat never
+// passes a tile it receives this step.
+export function courtesyPass(
+	match: Match,
+	picks: [Tile[], Tile[], Tile[], Tile[]]
+): Match {
+	if (!match.charleston) throw new Error('charleston not started');
+
+	for (const s of SEATS) {
+		if (picks[s].length > 3) throw new Error(`seat ${s} may pass at most 3 courtesy tiles`);
+	}
+	if (picks[0].length !== picks[2].length) {
+		throw new Error('courtesy pair 0↔2 must exchange an equal count');
+	}
+	if (picks[1].length !== picks[3].length) {
+		throw new Error('courtesy pair 1↔3 must exchange an equal count');
+	}
+
+	const handsAfterRemoval: Tile[][] = [];
+	for (const s of SEATS) {
+		const { missing, leftover } = multisetDiff(match.seats[s].hand, picks[s]);
+		if (missing.length > 0) {
+			throw new Error(`seat ${s} passed a tile it does not hold`);
+		}
+		handsAfterRemoval.push(leftover);
+	}
+
+	const received: Tile[][] = [[], [], [], []];
+	for (const s of SEATS) received[receiverOf(s, 'courtesy')].push(...picks[s]);
+
+	const { stepIndex } = match.charleston;
+	const log: CharlestonSeatPass[] = [...match.charleston.log];
+	const seats = SEATS.map<SeatPrivate>((s) => {
+		log.push({
+			seat: s,
+			stepIndex,
+			direction: 'courtesy',
+			sentTiles: picks[s],
+			receivedTiles: received[s]
+		});
+		return { hand: [...handsAfterRemoval[s], ...received[s]], exposures: match.seats[s].exposures };
+	}) as [SeatPrivate, SeatPrivate, SeatPrivate, SeatPrivate];
+
+	return {
+		...match,
+		seats,
+		charleston: { stepIndex: stepIndex + 1, committed: [null, null, null, null], log }
+	};
+}
+
 // Drive the three mandatory passes with every seat using the brain, then enter play. The
 // dealer keeps 14 tiles and will open play by discarding (handled by the play loop).
 export function runMandatoryCharleston(match: Match, ruleset: Ruleset): Match {

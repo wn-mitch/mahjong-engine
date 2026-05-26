@@ -56,6 +56,16 @@ Next steps queued for follow-up work. Roughly ordered by what unblocks the most 
 - [ ] Add CI: GitHub Actions running `pnpm check && pnpm test` on push
 - [ ] Decide on adapter for deployment (static, node, vercel) when ready to ship
 
+## Reach goals
+
+- [ ] WebGL "clacky" tiles: real digital tiles that shoot onto the board with physics and a satisfying clack. Aspirational presentation layer.
+    - Lives entirely in `src/lib/components/` — purely presentational, never touches `engine/` or the rulesets (the core has no notion of a board or a deal).
+    - Pick a renderer: raw WebGL is heavy for this; evaluate `three.js` (full 3D + physics) vs. a lighter 2.5D approach (CSS 3D transforms / `pixi.js` sprites) before committing.
+    - Physics for the "shoot on + clack": either a real engine (`cannon-es`/`rapier`) or scripted tweened arcs with a settle bounce. Scripted is cheaper and more art-directable; full physics is more "real."
+    - Audio: positional clack samples on tile-settle; respect `prefers-reduced-motion` (and a mute toggle) — motion/sound must be opt-out.
+    - Needs tile art with real faces (see Assets) — the flat-typography glyphs won't carry a 3D treatment. This is the long pole.
+    - Integration question to resolve first: the app is a position *editor*, not a game with a deal animation, so define what event "shoots a tile onto the board" (adding a tile to hand? committing a Charleston pass?).
+
 ## Out of scope / parking lot
 
 - Persistence and state sync across sessions

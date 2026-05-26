@@ -8,6 +8,7 @@ import {
 	runMandatoryCharleston,
 	beginCharleston,
 	charlestonPass,
+	courtesyPass,
 	runToCompletion,
 	applyDiscard,
 	resolveClaimWindow,
@@ -275,6 +276,140 @@ describe('charleston driver', () => {
 		if (!m.seats[0].hand.some((t) => t.kind === 'flower')) {
 			expect(() => charlestonPass(m, 'right', picks)).toThrow();
 		}
+	});
+});
+
+describe('courtesy pass', () => {
+	const W = (wind: 'N' | 'E' | 'S' | 'W'): Tile => ({ kind: 'wind', wind });
+
+	function started(hands: [Tile[], Tile[], Tile[], Tile[]]): Match {
+		return beginCharleston({
+			rulesetId: 'nmjl-2026',
+			phase: 'charleston',
+			dealer: 0,
+			seats: [
+				{ hand: hands[0], exposures: [] },
+				{ hand: hands[1], exposures: [] },
+				{ hand: hands[2], exposures: [] },
+				{ hand: hands[3], exposures: [] }
+			],
+			wall: [],
+			wallPos: 0,
+			turn: 0,
+			turnCounter: 0,
+			discards: [],
+			seed: 1,
+			rng: Math.random,
+			profiles
+		});
+	}
+
+	const baseHands = (): [Tile[], Tile[], Tile[], Tile[]] => [
+		[N('crack', 1), N('crack', 2), N('crack', 3), N('crack', 4)],
+		[N('bamboo', 1), N('bamboo', 2), N('bamboo', 3), N('bamboo', 4)],
+		[N('dot', 1), N('dot', 2), N('dot', 3), N('dot', 4)],
+		[W('E'), W('S'), W('W'), W('N')]
+	];
+
+	it('exchanges three tiles across each pair and conserves the pool', () => {
+		const m = started(baseHands());
+		const picks = [
+			[N('crack', 1), N('crack', 2), N('crack', 3)],
+			[N('bamboo', 1), N('bamboo', 2), N('bamboo', 3)],
+			[N('dot', 1), N('dot', 2), N('dot', 3)],
+			[W('E'), W('S'), W('W')]
+		] as [Tile[], Tile[], Tile[], Tile[]];
+		const after = courtesyPass(m, picks);
+
+		expect(multiset(after.seats[0].hand)).toEqual(
+			multiset([N('crack', 4), N('dot', 1), N('dot', 2), N('dot', 3)])
+		);
+		expect(multiset(after.seats[2].hand)).toEqual(
+			multiset([N('dot', 4), N('crack', 1), N('crack', 2), N('crack', 3)])
+		);
+		expect(multiset(after.seats[1].hand)).toEqual(
+			multiset([N('bamboo', 4), W('E'), W('S'), W('W')])
+		);
+		expect(multiset(after.seats[3].hand)).toEqual(
+			multiset([W('N'), N('bamboo', 1), N('bamboo', 2), N('bamboo', 3)])
+		);
+
+		const before = baseHands().flat();
+		expect(multiset(after.seats.flatMap((s) => s.hand))).toEqual(multiset(before));
+	});
+
+	it('allows the two pairs to trade different counts (2 and 0)', () => {
+		const m = started(baseHands());
+		const picks = [
+			[N('crack', 1), N('crack', 2)],
+			[],
+			[N('dot', 1), N('dot', 2)],
+			[]
+		] as [Tile[], Tile[], Tile[], Tile[]];
+		const after = courtesyPass(m, picks);
+
+		expect(multiset(after.seats[0].hand)).toEqual(
+			multiset([N('crack', 3), N('crack', 4), N('dot', 1), N('dot', 2)])
+		);
+		expect(multiset(after.seats[2].hand)).toEqual(
+			multiset([N('dot', 3), N('dot', 4), N('crack', 1), N('crack', 2)])
+		);
+		// the 1↔3 pair sat out: their hands are unchanged
+		expect(after.seats[1].hand).toEqual(baseHands()[1]);
+		expect(after.seats[3].hand).toEqual(baseHands()[3]);
+	});
+
+	it('handles an all-zero courtesy (everyone declines) as a no-op exchange', () => {
+		const m = started(baseHands());
+		const after = courtesyPass(m, [[], [], [], []]);
+		for (const s of [0, 1, 2, 3] as SeatId[]) {
+			expect(after.seats[s].hand).toEqual(baseHands()[s]);
+		}
+		expect(after.charleston?.log).toHaveLength(4);
+		expect(after.charleston!.log.every((p) => p.direction === 'courtesy')).toBe(true);
+		expect(after.charleston!.log.every((p) => p.sentTiles.length === 0)).toBe(true);
+	});
+
+	it('rejects unequal counts within a pair', () => {
+		const m = started(baseHands());
+		const picks = [
+			[N('crack', 1), N('crack', 2)],
+			[],
+			[N('dot', 1)],
+			[]
+		] as [Tile[], Tile[], Tile[], Tile[]];
+		expect(() => courtesyPass(m, picks)).toThrow();
+	});
+
+	it('rejects passing more than three tiles', () => {
+		const m = started(baseHands());
+		const picks = [
+			[N('crack', 1), N('crack', 2), N('crack', 3), N('crack', 4)],
+			[],
+			[N('dot', 1), N('dot', 2), N('dot', 3), N('dot', 4)],
+			[]
+		] as [Tile[], Tile[], Tile[], Tile[]];
+		expect(() => courtesyPass(m, picks)).toThrow();
+	});
+
+	it("reconstructs each seat's courtesy pass in its own view", () => {
+		const m = started(baseHands());
+		const picks = [
+			[N('crack', 1), N('crack', 2), N('crack', 3)],
+			[N('bamboo', 1), N('bamboo', 2), N('bamboo', 3)],
+			[N('dot', 1), N('dot', 2), N('dot', 3)],
+			[W('E'), W('S'), W('W')]
+		] as [Tile[], Tile[], Tile[], Tile[]];
+		const after = courtesyPass(m, picks);
+		const passes0 = seatView(after, 0).charleston.passes;
+		expect(passes0).toHaveLength(1);
+		expect(passes0[0].direction).toBe('courtesy');
+		expect(multiset(passes0[0].sentTiles)).toEqual(
+			multiset([N('crack', 1), N('crack', 2), N('crack', 3)])
+		);
+		expect(multiset(passes0[0].receivedTiles)).toEqual(
+			multiset([N('dot', 1), N('dot', 2), N('dot', 3)])
+		);
 	});
 });
 
