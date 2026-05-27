@@ -16,7 +16,8 @@ import { countTile, tileEquals } from '../../engine/tiles';
 import { buildCensus } from '../../engine/census';
 import {
 	evaluateReceived as evaluateReceivedImpl,
-	suggestCharlestonPass as suggestCharlestonPassImpl
+	suggestCharlestonPass as suggestCharlestonPassImpl,
+	topUpToThree
 } from './charleston';
 import { HANDS, type NMJLHand } from './hands';
 import { evaluateHand } from './matcher';
@@ -93,7 +94,12 @@ export class NMJLRuleset implements GameRuleset {
 		state: GameState,
 		direction: CharlestonDirection
 	): CharlestonPassSuggestion {
-		return suggestCharlestonPassImpl(state, direction, this.evaluateTargets(state));
+		const sugg = suggestCharlestonPassImpl(state, direction, this.evaluateTargets(state));
+		// The mandatory passes (right/across/left) must always send exactly three tiles; the brain
+		// may under-fill when nearly every tile is guarded, so top up here. Courtesy is optional
+		// and legitimately passes 0–3.
+		if (direction === 'courtesy') return sugg;
+		return { ...sugg, tiles: topUpToThree(sugg.tiles, state.self.hand) };
 	}
 
 	evaluateReceivedTiles(

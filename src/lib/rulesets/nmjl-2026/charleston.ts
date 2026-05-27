@@ -5,7 +5,7 @@ import type {
 	TargetEvaluation
 } from '../../engine/ruleset';
 import type { Tile } from '../../engine/tiles';
-import { countTile, tileEquals } from '../../engine/tiles';
+import { countTile, multisetDiff, tileEquals } from '../../engine/tiles';
 import { buildCensus } from '../../engine/census';
 import type { NMJLHand } from './hands';
 import { isDeadFor, tileValue } from './decide';
@@ -98,6 +98,28 @@ function rationaleFor(
 		case 'courtesy':
 			return `courtesy: passing ${count} dead tile${count === 1 ? '' : 's'}`;
 	}
+}
+
+function flowerRank(t: Tile): number {
+	return t.kind === 'flower' ? 1 : 0;
+}
+
+// Guarantee a legal 3-tile pass. The brain may return fewer than three when nearly every tile
+// is guarded (jokers/flowers/pairs/needed); NMJL still requires passing three on the mandatory
+// passes, so top up from the remaining hand — never with a joker (illegal to pass), flowers
+// only as a last resort.
+export function topUpToThree(picks: Tile[], hand: Tile[]): Tile[] {
+	if (picks.length >= PASS_SIZE) return picks.slice(0, PASS_SIZE);
+	const { leftover } = multisetDiff(hand, picks);
+	const candidates = leftover
+		.filter((t) => t.kind !== 'joker')
+		.sort((a, b) => flowerRank(a) - flowerRank(b));
+	const out = [...picks];
+	for (const t of candidates) {
+		if (out.length >= PASS_SIZE) break;
+		out.push(t);
+	}
+	return out;
 }
 
 export function suggestCharlestonPass(

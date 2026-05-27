@@ -470,6 +470,35 @@ describe('NMJL Charleston suggestion', () => {
 		}
 	});
 
+	it('tops up to a legal 3-tile pass when nearly every tile is guarded', () => {
+		// Five pairs + two jokers leave at most one unguarded single, so the brain under-fills the
+		// mandatory pass. NMJL still requires sending three, so the suggestion must top up from the
+		// remaining hand — never with a joker (illegal to pass).
+		const hand: Tile[] = [
+			N('crack', 2),
+			N('crack', 2),
+			N('crack', 4),
+			N('crack', 4),
+			N('bamboo', 6),
+			N('bamboo', 6),
+			N('dot', 8),
+			N('dot', 8),
+			W('N'),
+			W('N'),
+			J(),
+			J(),
+			D('white')
+		];
+		const s = state(hand);
+		for (const dir of ['right', 'across', 'left'] as const) {
+			const r = nmjl2026.suggestCharlestonPass(s, dir);
+			expect(r.tiles, dir).toHaveLength(3);
+			for (const t of r.tiles) {
+				expect(t.kind, `${dir} topped up with an illegal joker`).not.toBe('joker');
+			}
+		}
+	});
+
 	it('protects white dragons when a zero-using hand sits in top retained candidates', () => {
 		// 2026-1 / 2026-4 use white as the "0". With a hand that scores 2026 hands
 		// into the top retained set, the white dragon should be kept over a lower-
