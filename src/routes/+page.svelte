@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { base } from '$app/paths';
 	import GameTable from '$lib/components/game/GameTable.svelte';
+	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import { createGameStore } from '$lib/state/gameStore.svelte';
 	import { provideGame } from '$lib/state/gameContext';
 
@@ -21,13 +22,14 @@
 			NMJL 2026 · you vs three
 		</span>
 	</div>
-	<nav class="justify-self-end">
+	<nav class="flex items-center gap-4 justify-self-end">
 		<a
 			href="{base}/studio"
 			class="text-xs font-semibold uppercase tracking-[0.1em] text-ink-soft hover:text-accent"
 		>
 			Position studio →
 		</a>
+		<ThemeToggle />
 	</nav>
 </header>
 

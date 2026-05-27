@@ -13,6 +13,7 @@
 	import TilePalette from '$lib/components/TilePalette.svelte';
 	import PositionIO from '$lib/components/PositionIO.svelte';
 	import CharlestonPanel from '$lib/components/CharlestonPanel.svelte';
+	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 
 	import { createPositionStore } from '$lib/state/positionStore.svelte';
 	import { provideStore } from '$lib/state/context';
@@ -31,13 +32,14 @@
 	<title>mahjong-engine — position analyzer</title>
 </svelte:head>
 
-<nav class="flex justify-end px-6 pt-3">
+<nav class="flex items-center justify-end gap-4 px-6 pt-3">
 	<a
 		href="{base}/"
 		class="text-xs font-semibold uppercase tracking-[0.1em] text-ink-soft hover:text-accent"
 	>
 		Play a hand →
 	</a>
+	<ThemeToggle />
 </nav>
 
 <Selectors />
