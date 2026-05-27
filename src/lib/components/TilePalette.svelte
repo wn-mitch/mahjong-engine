@@ -1,5 +1,25 @@
 <script lang="ts" module>
 	import type { Tile as TileT, Suit } from '$lib/engine/tiles';
+	import type { FocusTarget } from '$lib/state/positionStore.svelte';
+
+	// Where a palette click currently lands. Pure so the dock bar can echo the same wording the
+	// palette header shows, without duplicating the switch.
+	export function focusTargetLabel(focus: FocusTarget): string {
+		switch (focus.kind) {
+			case 'hand':
+				return 'your hand';
+			case 'self-exposure':
+				return `your exposure #${focus.index + 1}`;
+			case 'opp-exposure':
+				return `${focus.opp} player's exposure #${focus.index + 1}`;
+			case 'discards':
+				return 'discard pile';
+			case 'charleston-sent':
+				return 'charleston sent tiles';
+			case 'charleston-received':
+				return 'charleston received tiles';
+		}
+	}
 
 	const SUITS: Suit[] = ['crack', 'bamboo', 'dot'];
 	const RANKS = [1, 2, 3, 4, 5, 6, 7, 8, 9] as const;
@@ -55,29 +75,21 @@
 <script lang="ts">
 	import Tile from './Tile.svelte';
 	import { useStore } from '$lib/state/context';
+	import { createMediaQuery, PHONE_QUERY } from '$lib/state/media.svelte';
+
+	// `bare` drops the panel chrome (border/bg/radius) so the palette can sit inside another surface
+	// — the phone dock sheet — without nesting one panel in another (DESIGN forbids nested panels).
+	let { bare = false }: { bare?: boolean } = $props();
 
 	const store = useStore();
 
+	// On a phone these tiles are the tap target, so size up from `sm` (30px) to `md` (42px). More
+	// rows is an accepted trade for a comfortable hit.
+	const phone = createMediaQuery(PHONE_QUERY);
+	const tileSize = $derived(phone.matches ? 'md' : 'sm');
+
 	const SUIT_NAME = { crack: 'cracks', bamboo: 'bamboo', dot: 'dots' } as const;
 	const WIND_NAME = { N: 'north', E: 'east', S: 'south', W: 'west' } as const;
-
-	function focusTarget(): string {
-		const f = store.focus;
-		switch (f.kind) {
-			case 'hand':
-				return 'your hand';
-			case 'self-exposure':
-				return `your exposure #${f.index + 1}`;
-			case 'opp-exposure':
-				return `${f.opp} player's exposure #${f.index + 1}`;
-			case 'discards':
-				return 'discard pile';
-			case 'charleston-sent':
-				return 'charleston sent tiles';
-			case 'charleston-received':
-				return 'charleston received tiles';
-		}
-	}
 
 	function tileAriaLabel(t: TileT): string {
 		switch (t.kind) {
@@ -94,7 +106,7 @@
 		}
 	}
 
-	const target = $derived(focusTarget());
+	const target = $derived(focusTargetLabel(store.focus));
 
 	let paletteEl: HTMLElement | null = $state(null);
 	let groupIdx = $state(0);
@@ -165,8 +177,8 @@
 </script>
 
 <div
-	class="palette bg-bg-raised border border-line rounded-panel p-3 pb-4 flex flex-col gap-3 min-h-0
-	       max-md:p-3"
+	class="palette p-3 pb-4 flex flex-col gap-3 min-h-0 max-md:p-3
+	       {bare ? '' : 'bg-bg-raised border border-line rounded-panel'}"
 	role="toolbar"
 	aria-label="Tile palette"
 	tabindex="-1"
@@ -187,11 +199,11 @@
 				<h3 class="m-0 text-xs font-semibold uppercase tracking-[0.1em] text-ink-faint">
 					{group.label}
 				</h3>
-				<div class="flex flex-wrap gap-1 max-md:gap-[4px]">
+				<div class="flex flex-wrap gap-1 max-md:gap-[4px] max-sm:gap-2">
 					{#each group.tiles as tile, j (group.id + ':' + j)}
 						<Tile
 							{tile}
-							size="sm"
+							size={tileSize}
 							ariaLabel={tileAriaLabel(tile)}
 							title={tileAriaLabel(tile)}
 							onclick={() => store.addTile(tile)}

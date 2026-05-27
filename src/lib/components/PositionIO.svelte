@@ -78,6 +78,7 @@
 				spellcheck="false"
 				rows="14"
 				class="w-full font-mono text-[12px] leading-normal p-3 bg-bg-raised border border-line rounded-[6px] text-ink resize-y
+				       max-sm:h-48
 				       focus-visible:outline-2 focus-visible:outline-accent focus-visible:[outline-offset:-1px] focus-visible:border-transparent"
 			></textarea>
 			{#if error}

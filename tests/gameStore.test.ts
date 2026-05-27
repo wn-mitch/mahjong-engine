@@ -89,7 +89,10 @@ describe('gameStore charleston', () => {
 		const ch = store.log.filter((e) => e.kind === 'charleston');
 		expect(ch).toHaveLength(1);
 		expect(ch[0]).toMatchObject({ kind: 'charleston', seat: 0 });
-		if (ch[0].kind === 'charleston') expect(ch[0].tiles).toHaveLength(3);
+		if (ch[0].kind === 'charleston') {
+			expect(ch[0].tiles).toHaveLength(3);
+			expect(ch[0].received).toHaveLength(3);
+		}
 	});
 
 	it('refuses to stage a joker for a pass', () => {

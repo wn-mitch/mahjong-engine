@@ -16,7 +16,11 @@
 	});
 </script>
 
-<section class="flex items-center gap-4 px-6 py-3 rounded-panel border border-line bg-bg-raised flex-wrap max-sm:px-4">
+<section
+	class="flex items-center gap-4 px-6 py-3 rounded-panel border border-line bg-bg-raised flex-wrap
+	       max-sm:px-4 max-sm:order-last max-sm:sticky max-sm:bottom-0 max-sm:z-30
+	       max-sm:pb-[max(0.75rem,env(safe-area-inset-bottom))]"
+>
 	<span class="text-sm font-semibold text-ink">{status}</span>
 
 	{#if game.canDeclareMahjong}
@@ -36,7 +40,11 @@
 		</span>
 	{/if}
 
-	<div class="flex items-center gap-4 ml-auto">
+	<div
+		class="flex items-center gap-4 ml-auto
+		       max-sm:w-full max-sm:ml-0 max-sm:gap-5 max-sm:flex-nowrap max-sm:overflow-x-auto
+		       max-sm:-mb-1 max-sm:pb-1 max-sm:[&>button]:shrink-0"
+	>
 		<button
 			type="button"
 			class="text-xs font-semibold uppercase tracking-[0.1em] {game.logOpen

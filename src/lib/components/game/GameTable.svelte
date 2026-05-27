@@ -39,7 +39,7 @@
 		</aside>
 	{/if}
 
-	<div class="grid gap-4 content-start min-w-0">
+	<div class="grid gap-4 content-start min-w-0 max-sm:pb-28">
 		<section class="grid grid-cols-3 gap-3 max-sm:grid-cols-1">
 			{#each opponents as seat (seat)}
 				<OpponentSeat {seat} />

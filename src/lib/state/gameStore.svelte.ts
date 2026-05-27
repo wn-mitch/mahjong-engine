@@ -51,7 +51,14 @@ export interface ClaimOffer {
 // Bot draws are deliberately absent — a player at the table wouldn't see them. The log is
 // rendered newest-last; `id` is a stable key for keyed iteration.
 export type GameEvent =
-	| { id: number; kind: 'charleston'; seat: SeatId; direction: CharlestonDirection; tiles: Tile[] }
+	| {
+			id: number;
+			kind: 'charleston';
+			seat: SeatId;
+			direction: CharlestonDirection;
+			tiles: Tile[];
+			received: Tile[];
+	  }
 	| { id: number; kind: 'draw'; seat: SeatId; tile: Tile }
 	| { id: number; kind: 'discard'; seat: SeatId; tile: Tile }
 	| { id: number; kind: 'claim'; seat: SeatId; tile: Tile; as: 'pung' | 'kong' | 'mahjong' }
@@ -95,6 +102,14 @@ export function createGameStore(rulesetId: RulesetId = 'nmjl-2026', initialSeed?
 
 	function record(e: NewEvent) {
 		log = [...log, { id: logSeq++, ...e } as GameEvent];
+	}
+
+	// What a seat received in a given charleston step, read back out of the (post-pass) match log
+	// where `charlestonPass`/`courtesyPass` recorded both sides. Snapshotted to drop the reactive
+	// proxy before it lands in the append-only log.
+	function receivedFor(seat: SeatId, step: number): Tile[] {
+		const entry = match.charleston?.log.find((p) => p.seat === seat && p.stepIndex === step);
+		return entry ? entry.receivedTiles.map((t) => $state.snapshot(t)) : [];
 	}
 
 	// Cancels stale `setTimeout` bot ticks across a `newGame`: a tick captures the generation
@@ -147,8 +162,9 @@ export function createGameStore(rulesetId: RulesetId = 'nmjl-2026', initialSeed?
 		if (passIndices.length !== 3) return;
 		const direction = plan[planCursor].direction;
 		const picks = botPicksFor(direction);
+		const step = match.charleston?.stepIndex ?? 0;
 		match = charlestonPass(match, direction, picks);
-		record({ kind: 'charleston', seat: 0, direction, tiles: picks[0] });
+		record({ kind: 'charleston', seat: 0, direction, tiles: picks[0], received: receivedFor(0, step) });
 		planCursor += 1;
 		enterCharlestonStep();
 	}
@@ -193,8 +209,16 @@ export function createGameStore(rulesetId: RulesetId = 'nmjl-2026', initialSeed?
 		const pick2 = selectCharlestonPass(seatView(match, 2), 'courtesy', ruleset).slice(0, eff02);
 		const pick1 = selectCharlestonPass(seatView(match, 1), 'courtesy', ruleset).slice(0, eff13);
 		const pick3 = selectCharlestonPass(seatView(match, 3), 'courtesy', ruleset).slice(0, eff13);
+		const step = match.charleston?.stepIndex ?? 0;
 		match = courtesyPass(match, [human, pick1, pick2, pick3]);
-		if (human.length > 0) record({ kind: 'charleston', seat: 0, direction: 'courtesy', tiles: human });
+		if (human.length > 0)
+			record({
+				kind: 'charleston',
+				seat: 0,
+				direction: 'courtesy',
+				tiles: human,
+				received: receivedFor(0, step)
+			});
 		planCursor += 1;
 		enterCharlestonStep();
 	}

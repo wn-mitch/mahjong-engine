@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Tile from './Tile.svelte';
 	import TileSlot from './TileSlot.svelte';
+	import CharlestonArrow from './CharlestonArrow.svelte';
 	import { useStore } from '$lib/state/context';
 	import { nextCharlestonDirection } from '$lib/state/positionStore.svelte';
 	import type { CharlestonDirection } from '$lib/engine/gameState';
@@ -81,7 +82,7 @@
 
 </script>
 
-<section class="px-6 py-3 bg-bg-sunk rounded-panel">
+<section class="px-6 py-3 max-sm:px-4 bg-bg-sunk rounded-panel">
 	<header class="mb-3 flex items-center justify-between gap-3">
 		<span
 			class="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.08em] text-ink-soft"
@@ -89,7 +90,7 @@
 			<span class="w-[5px] h-[5px] rounded-full bg-ink-faint" aria-hidden="true"></span>
 			Charleston
 		</span>
-		<div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.1em]">
+		<div class="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.1em]">
 			{#each ORDER as dir, i (dir)}
 				{@const done = i < passes.length}
 				{@const active = i === passes.length}
@@ -154,7 +155,7 @@
 				<p class="text-xs text-ink-soft italic">{suggestionState.text}</p>
 			{/if}
 
-			<div class="grid grid-cols-[6rem_1fr] items-center gap-2">
+			<div class="grid grid-cols-[6rem_1fr] items-center gap-2 max-sm:grid-cols-1 max-sm:items-start max-sm:gap-1">
 				<button
 					type="button"
 					class="text-xs font-semibold uppercase tracking-[0.08em] text-left
@@ -178,7 +179,7 @@
 				</div>
 			</div>
 
-			<div class="grid grid-cols-[6rem_1fr] items-center gap-2">
+			<div class="grid grid-cols-[6rem_1fr] items-center gap-2 max-sm:grid-cols-1 max-sm:items-start max-sm:gap-1">
 				<button
 					type="button"
 					class="text-xs font-semibold uppercase tracking-[0.08em] text-left
@@ -234,13 +235,13 @@
 						<span class="font-semibold uppercase tracking-[0.08em] text-ink-soft min-w-[5rem]">
 							{DIRECTION_LABEL[p.direction]}
 						</span>
-						<span class="text-ink-faint">→</span>
+						<CharlestonArrow variant="pass" direction={p.direction} />
 						<div class="flex gap-[3px]">
 							{#each p.sentTiles as tile, j (j)}
 								<Tile {tile} size="xs" />
 							{/each}
 						</div>
-						<span class="text-ink-faint">←</span>
+						<CharlestonArrow variant="receive" />
 						<div class="flex gap-[3px]">
 							{#each p.receivedTiles as tile, j (j)}
 								<Tile {tile} size="xs" />

@@ -10,7 +10,7 @@
 	import DiscardPile from '$lib/components/DiscardPile.svelte';
 	import RankedTargets from '$lib/components/RankedTargets.svelte';
 	import EngineSuggestion from '$lib/components/EngineSuggestion.svelte';
-	import TilePalette from '$lib/components/TilePalette.svelte';
+	import PaletteDock from '$lib/components/PaletteDock.svelte';
 	import PositionIO from '$lib/components/PositionIO.svelte';
 	import CharlestonPanel from '$lib/components/CharlestonPanel.svelte';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
@@ -32,7 +32,7 @@
 	<title>mahjong-engine — position analyzer</title>
 </svelte:head>
 
-<nav class="flex items-center justify-end gap-4 px-6 pt-3">
+<nav class="flex items-center justify-end gap-4 px-6 max-sm:px-4 pt-3">
 	<a
 		href="{base}/"
 		class="text-xs font-semibold uppercase tracking-[0.1em] text-ink-soft hover:text-accent"
@@ -51,16 +51,10 @@
 	       max-lg:grid-cols-[13rem_minmax(0,1fr)]
 	       max-lg:[grid-template-areas:'palette_position''palette_reasoning']
 	       max-sm:grid-cols-[minmax(0,1fr)]
-	       max-sm:gap-4 max-sm:p-3
-	       max-sm:[grid-template-areas:'position''reasoning''palette']"
+	       max-sm:gap-4 max-sm:p-3 max-sm:pb-24
+	       max-sm:[grid-template-areas:'position''reasoning']"
 >
-	<aside
-		class="sticky top-6 self-start max-h-[calc(100vh-3rem)] min-h-0 flex overflow-hidden [grid-area:palette]
-		       [&>:global(.palette)]:flex-1 [&>:global(.palette)]:min-h-0 [&>:global(.palette)]:overflow-y-auto
-		       max-sm:static max-sm:max-h-none max-sm:overflow-visible"
-	>
-		<TilePalette />
-	</aside>
+	<PaletteDock />
 
 	<section class="grid min-w-0 gap-3 content-start [grid-area:position]">
 		<Hand />

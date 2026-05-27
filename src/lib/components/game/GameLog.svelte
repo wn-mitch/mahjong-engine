@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Tile from '$lib/components/Tile.svelte';
+	import CharlestonArrow from '$lib/components/CharlestonArrow.svelte';
 	import { useGame } from '$lib/state/gameContext';
 	import type { SeatId } from '$lib/engine/game';
 
@@ -54,14 +55,21 @@
 							<Tile tile={e.tile} size="xs" />
 							<span class="text-ink-faint">({e.as})</span>
 						{:else if e.kind === 'charleston'}
-							<span>
-								Charleston · {e.direction === 'courtesy' ? 'courtesy' : `pass ${e.direction}`}
-							</span>
+							<span>Charleston</span>
 							<span class="flex [&>*:not(:first-child)]:-ml-[6px]">
 								{#each e.tiles as t, i (i)}
 									<Tile tile={t} size="xs" />
 								{/each}
 							</span>
+							<CharlestonArrow variant="pass" direction={e.direction} />
+							{#if e.received.length > 0}
+								<CharlestonArrow variant="receive" />
+								<span class="flex [&>*:not(:first-child)]:-ml-[6px]">
+									{#each e.received as t, i (i)}
+										<Tile tile={t} size="xs" />
+									{/each}
+								</span>
+							{/if}
 						{:else if e.kind === 'end'}
 							{#if e.result.kind === 'mahjong'}
 								<span class="font-semibold text-ink">
