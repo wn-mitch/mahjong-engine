@@ -163,6 +163,15 @@
 	{#if glyph}
 		<!-- eslint-disable-next-line svelte/no-at-html-tags — vendored, recolored CC0 asset -->
 		<span class="tile-glyph block w-full h-full {glyphColor(tile)}">{@html glyph}</span>
+		{#if tile.kind === 'number' && tile.suit === 'crack'}
+			<!-- Craks read by Chinese numeral on the face; surface the Arabic rank for NMJL players. -->
+			<span
+				class="absolute top-0 left-0 font-semibold tabular-nums leading-none bg-bg-raised/85 rounded-br-[3px] px-[2px] py-[1px] pointer-events-none {SUIT_TEXT[tile.suit]} {s.suitMark}"
+				aria-hidden="true"
+			>
+				{tile.rank}
+			</span>
+		{/if}
 	{:else if tile.kind === 'number'}
 		<span
 			class="font-semibold tracking-[-0.02em] leading-none [font-feature-settings:'tnum','ss01']
