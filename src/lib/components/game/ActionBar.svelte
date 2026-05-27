@@ -39,6 +39,16 @@
 	<div class="flex items-center gap-4 ml-auto">
 		<button
 			type="button"
+			class="text-xs font-semibold uppercase tracking-[0.1em] {game.logOpen
+				? 'text-ink'
+				: 'text-ink-faint hover:text-ink-soft'}"
+			aria-pressed={game.logOpen}
+			onclick={() => game.toggleLog()}
+		>
+			Log {game.logOpen ? 'on' : 'off'}
+		</button>
+		<button
+			type="button"
 			class="text-xs font-semibold uppercase tracking-[0.1em] {game.cardOpen
 				? 'text-ink'
 				: 'text-ink-faint hover:text-ink-soft'}"

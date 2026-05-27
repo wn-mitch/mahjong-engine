@@ -67,6 +67,43 @@
 		color-scheme: light;
 	}
 
+	:root[data-theme='dark'] {
+		color-scheme: dark;
+
+		--color-bg: oklch(0.18 0.008 80);
+		--color-bg-sunk: oklch(0.14 0.008 80);
+		--color-bg-raised: oklch(0.225 0.009 80);
+
+		--color-ink: oklch(0.93 0.008 80);
+		--color-ink-soft: oklch(0.72 0.008 80);
+		--color-ink-faint: oklch(0.55 0.008 80);
+
+		--color-line: oklch(0.32 0.01 80);
+		--color-line-strong: oklch(0.42 0.012 80);
+
+		--color-accent: oklch(0.66 0.13 252);
+		--color-accent-soft: oklch(0.32 0.06 252);
+		--color-accent-ink: oklch(0.78 0.13 252);
+
+		--color-need: oklch(0.68 0.1 145);
+		--color-need-soft: oklch(0.3 0.05 145);
+
+		--color-suit-crack: oklch(0.62 0.17 25);
+		--color-suit-bamboo: oklch(0.62 0.14 145);
+		--color-suit-dot: oklch(0.6 0.11 245);
+
+		--color-dragon-red: oklch(0.62 0.17 25);
+		--color-dragon-green: oklch(0.62 0.14 145);
+
+		--color-flower: oklch(0.68 0.1 30);
+		--color-joker: oklch(0.62 0.06 305);
+
+		--color-joker-bg: oklch(0.26 0.02 305);
+		--color-flower-bg: oklch(0.26 0.015 30);
+
+		--color-error: oklch(0.62 0.17 25);
+	}
+
 	html,
 	body {
 		margin: 0;

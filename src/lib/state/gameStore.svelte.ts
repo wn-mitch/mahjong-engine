@@ -21,6 +21,7 @@ import type {
 	ClaimResponse,
 	ClaimResponseKind,
 	Match,
+	MatchResult,
 	SeatId,
 	SeatPrivate
 } from '$lib/engine/game';
@@ -45,6 +46,20 @@ export interface ClaimOffer {
 	options: ClaimOption[];
 	canMahjong: boolean;
 }
+
+// A chronological, append-only record of public table events plus the human's own draws.
+// Bot draws are deliberately absent — a player at the table wouldn't see them. The log is
+// rendered newest-last; `id` is a stable key for keyed iteration.
+export type GameEvent =
+	| { id: number; kind: 'charleston'; seat: SeatId; direction: CharlestonDirection; tiles: Tile[] }
+	| { id: number; kind: 'draw'; seat: SeatId; tile: Tile }
+	| { id: number; kind: 'discard'; seat: SeatId; tile: Tile }
+	| { id: number; kind: 'claim'; seat: SeatId; tile: Tile; as: 'pung' | 'kong' | 'mahjong' }
+	| { id: number; kind: 'end'; result: MatchResult };
+
+// A GameEvent without its `id`, distributed across the union so each member keeps its own
+// fields — a plain `Omit<GameEvent, 'id'>` would collapse to the shared `kind` key only.
+type NewEvent = GameEvent extends infer E ? (E extends GameEvent ? Omit<E, 'id'> : never) : never;
 
 const RULESETS: Record<RulesetId, GameRuleset> = { 'nmjl-2026': nmjl2026 };
 const BOT_DELAY_MS = 700;
@@ -74,6 +89,13 @@ export function createGameStore(rulesetId: RulesetId = 'nmjl-2026', initialSeed?
 	let revealed = $state(false);
 	let hintOn = $state(false);
 	let cardOpen = $state(false);
+	let logOpen = $state(true);
+	let log = $state<GameEvent[]>([]);
+	let logSeq = 0;
+
+	function record(e: NewEvent) {
+		log = [...log, { id: logSeq++, ...e } as GameEvent];
+	}
 
 	// Cancels stale `setTimeout` bot ticks across a `newGame`: a tick captures the generation
 	// it was scheduled under and bails if it no longer matches.
@@ -124,7 +146,9 @@ export function createGameStore(rulesetId: RulesetId = 'nmjl-2026', initialSeed?
 		if (interaction.kind !== 'charleston-pass') return;
 		if (passIndices.length !== 3) return;
 		const direction = plan[planCursor].direction;
-		match = charlestonPass(match, direction, botPicksFor(direction));
+		const picks = botPicksFor(direction);
+		match = charlestonPass(match, direction, picks);
+		record({ kind: 'charleston', seat: 0, direction, tiles: picks[0] });
 		planCursor += 1;
 		enterCharlestonStep();
 	}
@@ -170,6 +194,7 @@ export function createGameStore(rulesetId: RulesetId = 'nmjl-2026', initialSeed?
 		const pick1 = selectCharlestonPass(seatView(match, 1), 'courtesy', ruleset).slice(0, eff13);
 		const pick3 = selectCharlestonPass(seatView(match, 3), 'courtesy', ruleset).slice(0, eff13);
 		match = courtesyPass(match, [human, pick1, pick2, pick3]);
+		if (human.length > 0) record({ kind: 'charleston', seat: 0, direction: 'courtesy', tiles: human });
 		planCursor += 1;
 		enterCharlestonStep();
 	}
@@ -183,6 +208,7 @@ export function createGameStore(rulesetId: RulesetId = 'nmjl-2026', initialSeed?
 
 	function endWall() {
 		match = { ...match, phase: 'ended', claim: undefined, result: { kind: 'wall-exhausted' } };
+		record({ kind: 'end', result: match.result! });
 		interaction = { kind: 'idle' };
 	}
 
@@ -193,6 +219,7 @@ export function createGameStore(rulesetId: RulesetId = 'nmjl-2026', initialSeed?
 			claim: undefined,
 			result: { kind: 'mahjong', winner: seat, fromDiscard: false }
 		};
+		record({ kind: 'end', result: match.result! });
 		interaction = { kind: 'idle' };
 	}
 
@@ -208,7 +235,9 @@ export function createGameStore(rulesetId: RulesetId = 'nmjl-2026', initialSeed?
 		if (seat === 0) {
 			if (controlledCount(match.seats[0]) < HAND_WHEN_ACTING) {
 				if (wallRemaining(match) === 0) return endWall();
+				const drawn = match.wall[match.wallPos];
 				match = draw(match, 0);
+				record({ kind: 'draw', seat: 0, tile: $state.snapshot(drawn) });
 			}
 			interaction = { kind: 'human-turn' };
 		} else {
@@ -235,13 +264,16 @@ export function createGameStore(rulesetId: RulesetId = 'nmjl-2026', initialSeed?
 		if (ruleset.isLegalMahjong(view)) return endSelfDraw(seat);
 		const tile = agent.chooseDiscard(view, match.profiles[seat], match.rng);
 		match = applyDiscard(match, seat, tile);
+		record({ kind: 'discard', seat, tile });
 		openClaim(tile, seat);
 	}
 
 	function selectDiscard(tile: Tile) {
 		if (match.turn !== 0 || interaction.kind !== 'human-turn') return;
-		match = applyDiscard(match, 0, $state.snapshot(tile));
-		openClaim($state.snapshot(tile), 0);
+		const snap = $state.snapshot(tile);
+		match = applyDiscard(match, 0, snap);
+		record({ kind: 'discard', seat: 0, tile: snap });
+		openClaim(snap, 0);
 	}
 
 	function declareMahjong() {
@@ -286,9 +318,23 @@ export function createGameStore(rulesetId: RulesetId = 'nmjl-2026', initialSeed?
 				kind: agent.chooseClaim(seatView(match, s), entry.tile, match.profiles[s], match.rng)
 			});
 		}
+		// resolveClaimWindow removes the claimed entry from the pile on both an exposure claim and
+		// a mahjong-from-discard; an all-pass leaves the pile untouched. Use that to log who claimed.
+		const before = match.discards.length;
+		const claimedTile = entry.tile;
 		match = resolveClaimWindow(match, ruleset, responses);
 		claimOffer = null;
+		if (match.discards.length < before) {
+			if (match.result?.kind === 'mahjong') {
+				record({ kind: 'claim', seat: match.result.winner!, tile: claimedTile, as: 'mahjong' });
+			} else {
+				const claimant = match.turn;
+				const ex = match.seats[claimant].exposures.at(-1);
+				if (ex) record({ kind: 'claim', seat: claimant, tile: claimedTile, as: ex.kind });
+			}
+		}
 		if (match.phase === 'ended') {
+			if (match.result) record({ kind: 'end', result: match.result });
 			interaction = { kind: 'idle' };
 			return;
 		}
@@ -306,6 +352,8 @@ export function createGameStore(rulesetId: RulesetId = 'nmjl-2026', initialSeed?
 		courtesyCount = 0;
 		claimOffer = null;
 		revealed = false;
+		log = [];
+		logSeq = 0;
 		enterCharlestonStep();
 	}
 
@@ -333,6 +381,10 @@ export function createGameStore(rulesetId: RulesetId = 'nmjl-2026', initialSeed?
 
 	function toggleCard() {
 		cardOpen = !cardOpen;
+	}
+
+	function toggleLog() {
+		logOpen = !logOpen;
 	}
 
 	// Kick off the opening charleston step for the initial match.
@@ -463,6 +515,12 @@ export function createGameStore(rulesetId: RulesetId = 'nmjl-2026', initialSeed?
 		get cardOpen() {
 			return cardOpen;
 		},
+		get logOpen() {
+			return logOpen;
+		},
+		get log() {
+			return log;
+		},
 		get engineSuggestion() {
 			return engineSuggestion;
 		},
@@ -492,7 +550,8 @@ export function createGameStore(rulesetId: RulesetId = 'nmjl-2026', initialSeed?
 		respondToClaim,
 		toggleReveal,
 		toggleHint,
-		toggleCard
+		toggleCard,
+		toggleLog
 	};
 }
 

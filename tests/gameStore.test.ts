@@ -82,6 +82,16 @@ describe('gameStore charleston', () => {
 		expect(store.interaction.kind).toBe('charleston-courtesy-count');
 	});
 
+	it('records the human charleston pass in the log', () => {
+		const store = createGameStore('nmjl-2026', 42);
+		stageThree(store);
+		store.commitCharlestonPass();
+		const ch = store.log.filter((e) => e.kind === 'charleston');
+		expect(ch).toHaveLength(1);
+		expect(ch[0]).toMatchObject({ kind: 'charleston', seat: 0 });
+		if (ch[0].kind === 'charleston') expect(ch[0].tiles).toHaveLength(3);
+	});
+
 	it('refuses to stage a joker for a pass', () => {
 		const store = createGameStore('nmjl-2026', 3);
 		const hand = store.humanView.self.hand;
@@ -163,6 +173,26 @@ describe('gameStore play loop', () => {
 		expect(store.phase).toBe('ended');
 		expect(store.result).not.toBeNull();
 		expect(tileCount(store)).toBe(152);
+	});
+
+	it('logs the human draws and discards, ending with the final result', () => {
+		const store = playOut(5);
+		expect(store.phase).toBe('ended');
+		const log = store.log;
+		const last = log[log.length - 1];
+		expect(last.kind).toBe('end');
+		if (last.kind === 'end') expect(last.result).toEqual(store.result);
+		expect(log.some((e) => e.kind === 'draw' && e.seat === 0)).toBe(true);
+		expect(log.some((e) => e.kind === 'discard')).toBe(true);
+		// Bot draws are deliberately never logged — only the human's own.
+		expect(log.filter((e) => e.kind === 'draw').every((e) => e.seat === 0)).toBe(true);
+	});
+
+	it('toggleLog flips the log panel visibility', () => {
+		const store = createGameStore('nmjl-2026', 42);
+		expect(store.logOpen).toBe(true);
+		store.toggleLog();
+		expect(store.logOpen).toBe(false);
 	});
 
 	it('opens and resolves a claim window on the human discard (turn leaves seat 0)', () => {

@@ -16,7 +16,7 @@
 </script>
 
 <div
-	class="grid gap-2 content-start p-3 rounded-panel transition-colors duration-200 ease-out-quart
+	class="grid gap-2 content-start min-w-0 p-3 rounded-panel transition-colors duration-200 ease-out-quart
 	       {isTurn ? 'bg-bg-raised border border-line-strong' : 'bg-bg-sunk border border-transparent'}"
 >
 	<header class="flex items-baseline gap-2">
@@ -35,15 +35,15 @@
 	</header>
 
 	{#if game.revealed}
-		<div class="flex flex-wrap gap-[3px]">
+		<div class="flex overflow-hidden [&>*:not(:first-child)]:-ml-[6px]">
 			{#each revealedHand as tile, i (i)}
 				<Tile {tile} size="xs" />
 			{/each}
 		</div>
 	{:else}
-		<div class="flex flex-wrap gap-[3px]" aria-label="{data.hand.length} concealed tiles">
+		<div class="flex gap-[2px] overflow-hidden" aria-label="{data.hand.length} concealed tiles">
 			{#each data.hand as _, i (i)}
-				<span class="block w-[22px] h-[30px] rounded-[4px] bg-bg-raised border border-line"></span>
+				<span class="block w-[16px] h-[22px] rounded-[3px] bg-bg-raised border border-line shrink-0"></span>
 			{/each}
 		</div>
 	{/if}

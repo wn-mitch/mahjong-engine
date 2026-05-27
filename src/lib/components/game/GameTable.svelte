@@ -7,6 +7,7 @@
 	import ActionBar from './ActionBar.svelte';
 	import EndBanner from './EndBanner.svelte';
 	import CardTargets from './CardTargets.svelte';
+	import GameLog from './GameLog.svelte';
 	import { useGame } from '$lib/state/gameContext';
 	import type { SeatId } from '$lib/engine/game';
 
@@ -18,14 +19,26 @@
 	const inCharleston = $derived(game.interaction.kind.startsWith('charleston'));
 	const inClaim = $derived(game.interaction.kind === 'claim');
 	const ended = $derived(game.phase === 'ended');
+
+	// The log occupies a left column and the card a right one; the center play area flexes
+	// between them. Width caps grow as columns are added so the play area keeps its breathing room.
+	const layout = $derived.by(() => {
+		if (game.logOpen && game.cardOpen)
+			return 'max-w-[1660px] grid-cols-[15rem_minmax(0,1fr)_22rem] max-lg:grid-cols-1';
+		if (game.logOpen) return 'max-w-[1280px] grid-cols-[15rem_minmax(0,1fr)] max-lg:grid-cols-1';
+		if (game.cardOpen)
+			return 'max-w-[1480px] grid-cols-[minmax(0,1fr)_22rem] max-lg:grid-cols-1';
+		return 'max-w-[1100px] grid-cols-1';
+	});
 </script>
 
-<main
-	class="mx-auto grid gap-6 p-6 content-start max-sm:p-3 max-sm:gap-3
-	       {game.cardOpen
-		? 'max-w-[1480px] grid-cols-[minmax(0,1fr)_22rem] max-lg:grid-cols-1'
-		: 'max-w-[1100px] grid-cols-1'}"
->
+<main class="mx-auto grid gap-6 p-6 content-start max-sm:p-3 max-sm:gap-3 {layout}">
+	{#if game.logOpen}
+		<aside class="sticky top-6 self-start max-lg:static">
+			<GameLog />
+		</aside>
+	{/if}
+
 	<div class="grid gap-4 content-start min-w-0">
 		<section class="grid grid-cols-3 gap-3 max-sm:grid-cols-1">
 			{#each opponents as seat (seat)}
