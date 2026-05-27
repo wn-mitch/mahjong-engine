@@ -157,19 +157,34 @@
 				return 'text-ink';
 		}
 	}
+
+	// Riichi faces encode rank/identity in CJK (Chinese numerals, 東南西北, 中發). Surface a
+	// short NMJL-readable label in the corner: crak rank, wind letter, dragon initial.
+	const DRAGON_INITIAL = { red: 'R', green: 'G', white: 'W' } as const;
+	function iconBadge(t: Tile): string | null {
+		switch (t.kind) {
+			case 'number':
+				return t.suit === 'crack' ? String(t.rank) : null;
+			case 'wind':
+				return t.wind;
+			case 'dragon':
+				return DRAGON_INITIAL[t.dragon];
+			default:
+				return null;
+		}
+	}
 </script>
 
 {#snippet face()}
 	{#if glyph}
 		<!-- eslint-disable-next-line svelte/no-at-html-tags — vendored, recolored CC0 asset -->
 		<span class="tile-glyph block w-full h-full {glyphColor(tile)}">{@html glyph}</span>
-		{#if tile.kind === 'number' && tile.suit === 'crack'}
-			<!-- Craks read by Chinese numeral on the face; surface the Arabic rank for NMJL players. -->
+		{#if iconBadge(tile)}
 			<span
-				class="absolute top-0 left-0 font-semibold tabular-nums leading-none bg-bg-raised/85 rounded-br-[3px] px-[2px] py-[1px] pointer-events-none {SUIT_TEXT[tile.suit]} {s.suitMark}"
+				class="absolute top-0 left-0 font-semibold tabular-nums leading-none bg-bg-raised/85 rounded-br-[3px] px-[2px] py-[1px] pointer-events-none {glyphColor(tile)} {s.suitMark}"
 				aria-hidden="true"
 			>
-				{tile.rank}
+				{iconBadge(tile)}
 			</span>
 		{/if}
 	{:else if tile.kind === 'number'}
