@@ -32,3 +32,8 @@ export function createMediaQuery(query: string) {
 // Matches Tailwind's `max-sm` variant (the `--breakpoint-sm: 720px` token in app.css compiles to a
 // `width < 720px` query), so JS-driven layout switches flip at the exact point the CSS does.
 export const PHONE_QUERY = '(max-width: 719.98px)';
+
+// Matches Tailwind's `lg:` variant (the `--breakpoint-lg: 1180px` token in app.css). Above this the
+// game shows its three-column desktop layout; below it the columns collapse and side panels become
+// bottom sheets.
+export const DESKTOP_QUERY = '(min-width: 1180px)';

@@ -17,7 +17,7 @@
 	const ready = $derived(game.queuedIndices.size === game.passTarget);
 </script>
 
-<section class="grid gap-3 p-4 px-6 rounded-panel border border-line bg-bg-raised max-sm:px-4">
+<div class="grid gap-3">
 	{#if kind === 'charleston-pass' && dir}
 		<div class="grid gap-1">
 			<span class="text-xs font-semibold uppercase tracking-[0.12em] text-ink-faint">
@@ -116,4 +116,4 @@
 			</button>
 		</div>
 	{/if}
-</section>
+</div>

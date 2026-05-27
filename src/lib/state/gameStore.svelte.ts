@@ -95,8 +95,15 @@ export function createGameStore(rulesetId: RulesetId = 'nmjl-2026', initialSeed?
 	let claimOffer = $state<ClaimOffer | null>(null);
 	let revealed = $state(false);
 	let hintOn = $state(false);
-	let cardOpen = $state(false);
-	let logOpen = $state(true);
+	// Both panels are peripheral side columns on desktop, so they open by default there. On a phone
+	// they are bottom sheets over the game, so they start closed (ssr=false means matchMedia is safe
+	// to read synchronously at init — no flash, no hydration mismatch).
+	const panelsDefaultOpen =
+		typeof window === 'undefined' || typeof window.matchMedia !== 'function'
+			? true
+			: window.matchMedia('(min-width: 1180px)').matches;
+	let cardOpen = $state(panelsDefaultOpen);
+	let logOpen = $state(panelsDefaultOpen);
 	let log = $state<GameEvent[]>([]);
 	let logSeq = 0;
 

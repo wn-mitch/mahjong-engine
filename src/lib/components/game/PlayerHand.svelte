@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Tile, { type TileState } from '$lib/components/Tile.svelte';
 	import Meld from './Meld.svelte';
+	import CharlestonControls from './CharlestonControls.svelte';
 	import { useGame } from '$lib/state/gameContext';
 	import { compareTiles, tileEquals, type Tile as TileT } from '$lib/engine/tiles';
 
@@ -18,11 +19,23 @@
 
 	const exposures = $derived(game.seats[0].exposures);
 
+	const inCharleston = $derived(game.interaction.kind.startsWith('charleston'));
+
 	const mode = $derived.by<'discard' | 'charleston' | 'idle'>(() => {
 		const k = game.interaction.kind;
 		if (k === 'human-turn') return 'discard';
 		if (k === 'charleston-pass' || k === 'charleston-courtesy-pass') return 'charleston';
 		return 'idle';
+	});
+
+	// The non-charleston turn status. Charleston states are owned by CharlestonControls, which
+	// renders its own richer prompt inside this tray.
+	const playStatus = $derived.by(() => {
+		const k = game.interaction.kind;
+		if (k === 'human-turn') return 'Your turn · discard a tile';
+		if (k === 'bot-thinking') return `${game.seatLabel(game.turn)} is playing…`;
+		if (k === 'claim') return 'A discard is on offer';
+		return '';
 	});
 
 	// Map the engine's suggested tiles (a discard pick, or the charleston pass tiles) onto
@@ -62,9 +75,55 @@
 				: 'passing nothing';
 		return 'waiting…';
 	});
+
+	// Pick the largest tile size whose single-line row fits the available width, so the hand
+	// never wraps to a second row. Constants mirror the SIZE map in Tile.svelte and the gap
+	// classes below. The game hand is a flat sorted row (no suit groups, no trailing add-slot).
+	type FitSize = 'lg' | 'md' | 'sm';
+	const ORDER: FitSize[] = ['lg', 'md', 'sm'];
+	const TILE_W: Record<FitSize, number> = { lg: 54, md: 42, sm: 30 };
+	const GAP: Record<FitSize, number> = { lg: 8, md: 4, sm: 4 };
+
+	function rowWidth(size: FitSize, n: number): number {
+		return n * TILE_W[size] + Math.max(0, n - 1) * GAP[size];
+	}
+
+	let availWidth = $state(0);
+	const tileSize = $derived.by<FitSize>(() => {
+		const n = sorted.length;
+		if (availWidth <= 0 || n === 0) return 'lg';
+		for (const s of ORDER) if (rowWidth(s, n) <= availWidth) return s;
+		return 'sm';
+	});
+	const handGap = $derived(tileSize === 'lg' ? 'gap-2' : 'gap-1');
 </script>
 
-<section class="grid gap-3 p-4 px-6 bg-bg rounded-panel border border-line max-sm:px-3">
+<section class="grid gap-3 p-4 px-6 bg-bg-raised rounded-panel border border-line max-sm:px-3">
+	{#if inCharleston}
+		<div class="pb-3 border-b border-line">
+			<CharlestonControls />
+		</div>
+	{:else if playStatus}
+		<div class="flex items-center gap-4 flex-wrap pb-3 border-b border-line">
+			<span class="text-sm font-semibold text-ink">{playStatus}</span>
+			{#if game.canDeclareMahjong}
+				<button
+					type="button"
+					class="text-sm font-medium px-4 py-2 rounded-chip bg-accent text-bg transition-colors duration-150 hover:bg-accent-ink"
+					onclick={() => game.declareMahjong()}
+				>
+					Declare mahjong
+				</button>
+			{/if}
+			{#if game.hintOn && game.engineSuggestion}
+				<span class="inline-flex items-center gap-2 text-xs italic text-ink-soft ml-auto">
+					engine would discard
+					<Tile tile={game.engineSuggestion} size="sm" />
+				</span>
+			{/if}
+		</div>
+	{/if}
+
 	<header class="flex items-baseline gap-4 flex-wrap">
 		<span class="inline-flex items-center gap-2 text-base font-semibold text-ink tracking-tight">
 			<span class="w-[6px] h-[6px] rounded-full bg-ink-faint" aria-hidden="true"></span>
@@ -84,11 +143,11 @@
 		</div>
 	{/if}
 
-	<div class="flex flex-wrap gap-[6px] items-end">
+	<div class="flex {handGap} items-end min-w-0" bind:clientWidth={availWidth}>
 		{#each sorted as item (item.srcIndex)}
 			<Tile
 				tile={item.tile}
-				size="lg"
+				size={tileSize}
 				state={tileStateFor(item.srcIndex)}
 				onclick={mode === 'idle' ? undefined : () => clickTile(item)}
 			/>

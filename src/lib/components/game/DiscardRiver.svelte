@@ -8,7 +8,7 @@
 	const lastIndex = $derived(discards.length - 1);
 </script>
 
-<section class="grid gap-2 px-6 py-4 max-sm:px-3">
+<section class="grid gap-2 p-4 px-6 bg-bg-raised rounded-panel border border-line max-sm:px-4">
 	<header class="flex items-center gap-2">
 		<span class="w-[5px] h-[5px] rounded-full bg-ink-faint" aria-hidden="true"></span>
 		<span class="text-xs font-semibold uppercase tracking-[0.1em] text-ink-soft">Discards</span>
