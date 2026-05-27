@@ -88,13 +88,24 @@
 		return n * TILE_W[size] + Math.max(0, n - 1) * GAP[size];
 	}
 
+	// Rows needed to lay out n tiles at `size` when the row is allowed to wrap.
+	function rowsFor(size: FitSize, n: number, avail: number): number {
+		const per = Math.max(1, Math.floor((avail + GAP[size]) / (TILE_W[size] + GAP[size])));
+		return Math.ceil(n / per);
+	}
+
+	// Prefer the largest size that fits on a single line (the tablet/desktop case). When even the
+	// smallest single-line size overflows — phones, or the narrowest desktop with both panels open —
+	// reflow rather than clip: wrap to the largest size that lands in ≤2 rows, else the smallest.
 	let availWidth = $state(0);
-	const tileSize = $derived.by<FitSize>(() => {
+	const fit = $derived.by<{ size: FitSize; wrap: boolean }>(() => {
 		const n = sorted.length;
-		if (availWidth <= 0 || n === 0) return 'lg';
-		for (const s of ORDER) if (rowWidth(s, n) <= availWidth) return s;
-		return 'sm';
+		if (availWidth <= 0 || n === 0) return { size: 'lg', wrap: false };
+		for (const s of ORDER) if (rowWidth(s, n) <= availWidth) return { size: s, wrap: false };
+		for (const s of ORDER) if (rowsFor(s, n, availWidth) <= 2) return { size: s, wrap: true };
+		return { size: 'sm', wrap: true };
 	});
+	const tileSize = $derived(fit.size);
 	const handGap = $derived(tileSize === 'lg' ? 'gap-2' : 'gap-1');
 </script>
 
@@ -143,7 +154,12 @@
 		</div>
 	{/if}
 
-	<div class="flex {handGap} items-end min-w-0 lg:justify-center" bind:clientWidth={availWidth}>
+	<div
+		class="flex {handGap} items-end min-w-0 lg:justify-center {fit.wrap
+			? 'flex-wrap justify-center'
+			: ''}"
+		bind:clientWidth={availWidth}
+	>
 		{#each sorted as item (item.srcIndex)}
 			<Tile
 				tile={item.tile}
