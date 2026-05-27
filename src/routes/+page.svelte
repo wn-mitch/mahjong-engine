@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { base } from '$app/paths';
 	import GameTable from '$lib/components/game/GameTable.svelte';
 	import { createGameStore } from '$lib/state/gameStore.svelte';
 	import { provideGame } from '$lib/state/gameContext';
@@ -22,7 +23,7 @@
 	</div>
 	<nav class="justify-self-end">
 		<a
-			href="/studio"
+			href="{base}/studio"
 			class="text-xs font-semibold uppercase tracking-[0.1em] text-ink-soft hover:text-accent"
 		>
 			Position studio →

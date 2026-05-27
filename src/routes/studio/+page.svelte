@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
+	import { base } from '$app/paths';
 
 	import Selectors from '$lib/components/Selectors.svelte';
 	import Hand from '$lib/components/Hand.svelte';
@@ -32,7 +33,7 @@
 
 <nav class="flex justify-end px-6 pt-3">
 	<a
-		href="/"
+		href="{base}/"
 		class="text-xs font-semibold uppercase tracking-[0.1em] text-ink-soft hover:text-accent"
 	>
 		Play a hand →
