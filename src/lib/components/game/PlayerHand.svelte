@@ -136,14 +136,14 @@
 	</header>
 
 	{#if exposures.length > 0}
-		<div class="flex flex-wrap gap-2">
+		<div class="flex flex-wrap gap-2 lg:justify-center">
 			{#each exposures as ex, i (i)}
 				<Meld tiles={ex.tiles} size="md" />
 			{/each}
 		</div>
 	{/if}
 
-	<div class="flex {handGap} items-end min-w-0" bind:clientWidth={availWidth}>
+	<div class="flex {handGap} items-end min-w-0 lg:justify-center" bind:clientWidth={availWidth}>
 		{#each sorted as item (item.srcIndex)}
 			<Tile
 				tile={item.tile}
