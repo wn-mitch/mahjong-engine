@@ -15,6 +15,7 @@ import type {
 	TileSuggestion
 } from '$lib/engine/ruleset';
 import { nmjl2026, chineseTraditional } from '$lib/rulesets';
+import { houseRulesStore } from '$lib/state/houseRulesStore.svelte';
 
 export type RulesetId = 'nmjl-2026' | 'chinese-traditional';
 export type Opp = 'left' | 'across' | 'right';
@@ -193,7 +194,9 @@ export function createPositionStore() {
 
 	const evaluation = $derived.by<TargetEvaluation[]>(() => {
 		try {
-			return ruleset.evaluateTargets(effectiveState);
+			return ruleset.evaluateTargets(effectiveState, {
+				includeConcealed: houseRulesStore.allowConcealed
+			});
 		} catch {
 			return [];
 		}
@@ -215,7 +218,9 @@ export function createPositionStore() {
 
 	const isWinning = $derived.by(() => {
 		try {
-			return ruleset.isWinningHand(effectiveState);
+			return ruleset.isWinningHand(effectiveState, {
+				allowConcealed: houseRulesStore.allowConcealed
+			});
 		} catch {
 			return false;
 		}

@@ -23,7 +23,9 @@
 	function describeTarget(t: TargetEvaluation): string {
 		const need = t.tilesNeeded.length;
 		const parts: string[] = [];
-		if (need === 0) parts.push('complete');
+		// `need === 0` is also true when no valid layout exists at all (score 0) — only call that
+		// "complete" when the hand actually scored a win, otherwise it reads as a false positive.
+		if (need === 0) parts.push(t.completionScore >= 1 ? 'complete' : 'unreachable');
 		else if (need === 1) parts.push('needs 1 tile');
 		else parts.push(`needs ${need} tiles`);
 		if (t.jokerSlotsRemaining > 0)
@@ -34,11 +36,20 @@
 </script>
 
 <section class="bg-bg-raised border border-line rounded-panel p-4 min-w-0 flex flex-col">
-	<header class="flex items-baseline justify-between mb-3">
+	<header class="flex items-baseline justify-between gap-3 mb-3">
 		<h2 class="m-0 text-base font-semibold tracking-tight">The card</h2>
-		<span class="text-xs font-semibold uppercase tracking-[0.1em] text-ink-faint">
-			your best lines
-		</span>
+		<button
+			type="button"
+			class="text-xs font-semibold uppercase tracking-[0.1em] transition-colors duration-150
+			       {game.allowConcealed ? 'text-accent-ink hover:text-accent' : 'text-ink-faint hover:text-ink-soft'}"
+			aria-pressed={game.allowConcealed}
+			title={game.allowConcealed
+				? 'House rule on: concealed hands can be won after exposing. Click for standard rules.'
+				: 'Standard: concealed hands hidden once you’ve exposed. Click to allow them (no-score play).'}
+			onclick={() => game.toggleAllowConcealed()}
+		>
+			{game.allowConcealed ? 'concealed ✓' : 'best lines'}
+		</button>
 	</header>
 
 	{#if ranked.length === 0}
@@ -62,6 +73,14 @@
 							</span>
 						</span>
 						<span class="col-start-2 text-xs text-ink-soft italic leading-normal">
+							{#if evaluation.target.concealed}
+								<span
+									class="not-italic font-semibold uppercase tracking-[0.06em] text-[0.65rem] text-accent-ink mr-1"
+									title="Concealed hand — only winnable here because the concealed house rule is on"
+								>
+									concealed
+								</span>
+							{/if}
 							{describeTarget(evaluation)}
 						</span>
 						<span

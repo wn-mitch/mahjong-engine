@@ -78,6 +78,8 @@
 
 <script lang="ts">
 	import type { Tile } from '$lib/engine/tiles';
+	import { tileStyleStore } from '$lib/state/tileStyleStore.svelte';
+	import { tileGlyphSvg } from './tileGlyph';
 
 	type Props = {
 		tile: Tile;
@@ -102,6 +104,7 @@
 	}: Props = $props();
 
 	const SUIT_GLYPH = { crack: '萬', bamboo: '索', dot: '筒' } as const;
+	const SUIT_WESTERN = { crack: 'crk', bamboo: 'bam', dot: 'dot' } as const;
 	const SUIT_NAME = { crack: 'cracks', bamboo: 'bamboo', dot: 'dots' } as const;
 	const DRAGON_GLYPH = { red: '中', green: '發', white: '' } as const;
 	const DRAGON_NAME = {
@@ -139,19 +142,45 @@
 				: 'bg-bg-raised'
 	);
 	const kindJustify = $derived(tile.kind === 'number' ? 'justify-between' : 'justify-center');
+
+	// Icon mode renders a full-bleed traditional tile face (number suits, winds,
+	// dragons). Flowers/jokers have no glyph and fall through to the flat face.
+	const glyph = $derived(tileStyleStore.style === 'icon' ? tileGlyphSvg(tile) : null);
+
+	function glyphColor(t: Tile): string {
+		switch (t.kind) {
+			case 'number':
+				return SUIT_TEXT[t.suit];
+			case 'dragon':
+				return t.dragon === 'white' ? 'text-ink-soft' : DRAGON_TEXT[t.dragon];
+			default:
+				return 'text-ink';
+		}
+	}
 </script>
 
 {#snippet face()}
-	{#if tile.kind === 'number'}
+	{#if glyph}
+		<!-- eslint-disable-next-line svelte/no-at-html-tags — vendored, recolored CC0 asset -->
+		<span class="tile-glyph block w-full h-full {glyphColor(tile)}">{@html glyph}</span>
+	{:else if tile.kind === 'number'}
 		<span
 			class="font-semibold tracking-[-0.02em] leading-none [font-feature-settings:'tnum','ss01']
 			       {SUIT_TEXT[tile.suit]} {s.rank}"
 		>
 			{tile.rank}
 		</span>
-		<span class="cjk font-medium opacity-85 leading-none {SUIT_TEXT[tile.suit]} {s.suitMark}">
-			{SUIT_GLYPH[tile.suit]}
-		</span>
+		{#if tileStyleStore.style === 'western'}
+			<span
+				class="font-semibold uppercase tracking-[0.04em] opacity-85 leading-none {SUIT_TEXT[tile.suit]} {s.suitMark}"
+			>
+				{SUIT_WESTERN[tile.suit]}
+			</span>
+		{:else}
+			<span class="cjk font-medium opacity-85 leading-none {SUIT_TEXT[tile.suit]} {s.suitMark}">
+				{SUIT_GLYPH[tile.suit]}
+			</span>
+		{/if}
 	{:else if tile.kind === 'wind'}
 		<span class="font-semibold tracking-[-0.04em] text-ink {s.wind}">{tile.wind}</span>
 	{:else if tile.kind === 'dragon'}
@@ -238,3 +267,13 @@
 		{/if}
 	</span>
 {/if}
+
+<style>
+	.tile-glyph :global(svg) {
+		display: block;
+		width: 100%;
+		height: 100%;
+		padding: 6%;
+		box-sizing: border-box;
+	}
+</style>

@@ -1029,3 +1029,52 @@ describe('NMJL evaluateReceivedTiles', () => {
 		expect(keep6c).toBe(true);
 	});
 });
+
+describe('NMJL allowConcealed house rule', () => {
+	// A complete "FF 246 888 246 888" (hand 2468-8, concealed) where the 888-crack pung is exposed.
+	// The 14 tiles are all present across hand + exposure; only the concealed designation is in play.
+	function exposedConcealedWin(): GameState {
+		return {
+			phase: 'play',
+			self: {
+				hand: [
+					F(),
+					F(),
+					N('crack', 2),
+					N('crack', 4),
+					N('crack', 6),
+					N('bamboo', 2),
+					N('bamboo', 4),
+					N('bamboo', 6),
+					N('bamboo', 8),
+					N('bamboo', 8),
+					N('bamboo', 8)
+				],
+				exposures: [{ owner: 'self', tiles: repeat(N('crack', 8), 3) }]
+			},
+			opponents: { left: [], across: [], right: [] },
+			discards: [],
+			charleston: { passes: [] }
+		};
+	}
+
+	it('blocks a concealed hand once exposed by default', () => {
+		const s = exposedConcealedWin();
+		expect(nmjl2026.isWinningHand(s)).toBe(false);
+		expect(nmjl2026.isLegalMahjong(s)).toBe(false);
+	});
+
+	it('allows the same concealed hand when the house rule is on', () => {
+		const s = exposedConcealedWin();
+		expect(nmjl2026.isWinningHand(s, { allowConcealed: true })).toBe(true);
+		expect(nmjl2026.isLegalMahjong(s, { allowConcealed: true })).toBe(true);
+	});
+
+	it('hides concealed hands from the card by default, includes them when asked', () => {
+		const s = exposedConcealedWin();
+		const has2468_8 = (evals: { target: { id: string } }[]) =>
+			evals.some((e) => e.target.id === '2468-8');
+		expect(has2468_8(nmjl2026.evaluateTargets(s))).toBe(false);
+		expect(has2468_8(nmjl2026.evaluateTargets(s, { includeConcealed: true }))).toBe(true);
+	});
+});

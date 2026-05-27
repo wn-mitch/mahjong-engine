@@ -14,6 +14,7 @@
 	import PositionIO from '$lib/components/PositionIO.svelte';
 	import CharlestonPanel from '$lib/components/CharlestonPanel.svelte';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
+	import TileStyleToggle from '$lib/components/TileStyleToggle.svelte';
 
 	import { createPositionStore } from '$lib/state/positionStore.svelte';
 	import { provideStore } from '$lib/state/context';
@@ -39,6 +40,7 @@
 	>
 		Play a hand →
 	</a>
+	<TileStyleToggle />
 	<ThemeToggle />
 </nav>
 

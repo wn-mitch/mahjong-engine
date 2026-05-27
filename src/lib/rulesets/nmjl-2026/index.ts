@@ -5,11 +5,13 @@ import type {
 	CharlestonStep,
 	ClaimOption,
 	DealCounts,
+	EvaluateOptions,
 	GameRuleset,
 	MahjongCheckOptions,
 	TargetEvaluation,
 	TargetHand,
-	TileSuggestion
+	TileSuggestion,
+	WinningHandOptions
 } from '../../engine/ruleset';
 import type { Tile } from '../../engine/tiles';
 import { countTile, tileEquals } from '../../engine/tiles';
@@ -22,10 +24,6 @@ import {
 import { HANDS, type NMJLHand } from './hands';
 import { evaluateHand } from './matcher';
 import { tileValue } from './decide';
-
-export interface EvaluateOptions {
-	includeConcealed?: boolean;
-}
 
 export class NMJLRuleset implements GameRuleset {
 	readonly id = 'nmjl-2026';
@@ -43,12 +41,13 @@ export class NMJLRuleset implements GameRuleset {
 		return results;
 	}
 
-	isWinningHand(state: GameState): boolean {
+	isWinningHand(state: GameState, opts: WinningHandOptions = {}): boolean {
 		const hasExposures = state.self.exposures.length > 0;
 		for (const hand of HANDS) {
 			// A concealed ("C") hand may only be won fully concealed — once you've claimed a
-			// discard into an exposure, those hands are off the table.
-			if (hand.concealed && hasExposures) continue;
+			// discard into an exposure, those hands are off the table. The `allowConcealed` house
+			// rule lifts this for groups that don't track score.
+			if (hand.concealed && hasExposures && !opts.allowConcealed) continue;
 			const r = evaluateHand(hand, state);
 			if (r.completionScore >= 1) return true;
 		}
@@ -162,6 +161,7 @@ export class NMJLRuleset implements GameRuleset {
 	}
 
 	isLegalMahjong(state: GameState, opts: MahjongCheckOptions = {}): boolean {
+		const winOpts: WinningHandOptions = { allowConcealed: opts.allowConcealed };
 		if (opts.fromDiscard) {
 			// You can't claim a discarded joker, and the claimed tile becomes the 14th — add it to
 			// the hand and ask whether some pattern is now complete. Joker-as-pair is already
@@ -171,9 +171,9 @@ export class NMJLRuleset implements GameRuleset {
 				...state,
 				self: { ...state.self, hand: [...state.self.hand, opts.fromDiscard] }
 			};
-			return this.isWinningHand(augmented);
+			return this.isWinningHand(augmented, winOpts);
 		}
-		return this.isWinningHand(state);
+		return this.isWinningHand(state, winOpts);
 	}
 }
 

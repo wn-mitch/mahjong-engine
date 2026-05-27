@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Tile from './Tile.svelte';
 	import { useStore } from '$lib/state/context';
+	import { houseRulesStore } from '$lib/state/houseRulesStore.svelte';
 	import type { PatternSlot, TargetEvaluation } from '$lib/engine/ruleset';
 
 	const store = useStore();
@@ -36,7 +37,7 @@
 		const need = t.tilesNeeded.length;
 		const joker = t.jokerSlotsRemaining;
 		const parts: string[] = [];
-		if (need === 0) parts.push('complete');
+		if (need === 0) parts.push(t.completionScore >= 1 ? 'complete' : 'unreachable');
 		else if (need === 1) parts.push('needs 1 tile');
 		else parts.push(`needs ${need} tiles`);
 		if (joker > 0) parts.push(`${joker} joker slot${joker === 1 ? '' : 's'}`);
@@ -50,15 +51,29 @@
 >
 	<header class="flex items-baseline justify-between mb-3">
 		<h2 class="m-0 text-base font-semibold tracking-tight">Ranked targets</h2>
-		{#if pinned && !isOnboarding}
+		<span class="flex items-baseline gap-3">
+			{#if pinned && !isOnboarding}
+				<button
+					type="button"
+					class="text-xs font-semibold uppercase tracking-[0.08em] text-accent-ink hover:text-accent"
+					onclick={() => store.pinTarget(null)}
+				>
+					clear pin
+				</button>
+			{/if}
 			<button
 				type="button"
-				class="text-xs font-semibold uppercase tracking-[0.08em] text-accent-ink hover:text-accent"
-				onclick={() => store.pinTarget(null)}
+				class="text-xs font-semibold uppercase tracking-[0.08em] transition-colors duration-150
+				       {houseRulesStore.allowConcealed ? 'text-accent-ink hover:text-accent' : 'text-ink-faint hover:text-ink-soft'}"
+				aria-pressed={houseRulesStore.allowConcealed}
+				title={houseRulesStore.allowConcealed
+					? 'Concealed hands shown (house rule). Click to hide them after exposing.'
+					: 'Concealed hands hidden after exposing. Click to show them (no-score play).'}
+				onclick={() => houseRulesStore.toggleAllowConcealed()}
 			>
-				clear pin
+				concealed {houseRulesStore.allowConcealed ? '✓' : '✕'}
 			</button>
-		{/if}
+		</span>
 	</header>
 
 	{#if isOnboarding}
@@ -137,6 +152,14 @@
 							</span>
 						</span>
 						<span class="col-start-2 text-xs text-ink-soft italic leading-normal">
+							{#if evaluation.target.concealed}
+								<span
+									class="not-italic font-semibold uppercase tracking-[0.06em] text-[0.65rem] text-accent-ink mr-1"
+									title="Concealed hand — only winnable here because the concealed house rule is on"
+								>
+									concealed
+								</span>
+							{/if}
 							{describeTarget(evaluation)}
 						</span>
 						<span

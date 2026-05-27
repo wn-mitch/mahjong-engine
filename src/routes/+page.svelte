@@ -2,6 +2,7 @@
 	import { base } from '$app/paths';
 	import GameTable from '$lib/components/game/GameTable.svelte';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
+	import TileStyleToggle from '$lib/components/TileStyleToggle.svelte';
 	import { createGameStore } from '$lib/state/gameStore.svelte';
 	import { provideGame } from '$lib/state/gameContext';
 	import { createMediaQuery, DESKTOP_QUERY } from '$lib/state/media.svelte';
@@ -99,6 +100,7 @@
 		>
 			Position studio →
 		</a>
+		<TileStyleToggle />
 		<ThemeToggle />
 	</nav>
 </header>

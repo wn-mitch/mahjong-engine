@@ -7,6 +7,9 @@ export interface TargetHand {
 	id: string;
 	description: string;
 	rulesetId: string;
+	// True for hands that may only be won fully concealed. Surfaced so the UI can mark lines that
+	// are live only under the `allowConcealed` house rule.
+	concealed?: boolean;
 }
 
 export type PatternSlotStatus = 'filled' | 'joker-filled' | 'needed';
@@ -46,13 +49,19 @@ export interface CharlestonReceivedEvaluation {
 	rationale: string;
 }
 
+export interface EvaluateOptions {
+	// Include hands that can't be the live target — e.g. concealed-only hands once the seat has
+	// exposed. Off by default so the ranked card shows only attainable lines.
+	includeConcealed?: boolean;
+}
+
 export interface Ruleset {
 	readonly id: string;
 	readonly name: string;
 	readonly version: string;
 
-	evaluateTargets(state: GameState): TargetEvaluation[];
-	isWinningHand(state: GameState): boolean;
+	evaluateTargets(state: GameState, opts?: EvaluateOptions): TargetEvaluation[];
+	isWinningHand(state: GameState, opts?: WinningHandOptions): boolean;
 	suggestDiscard(state: GameState, target?: TargetHand): TileSuggestion;
 	suggestCharlestonPass(state: GameState, direction: CharlestonDirection): CharlestonPassSuggestion;
 	evaluateReceivedTiles?(
@@ -89,7 +98,14 @@ export interface ClaimOption {
 	jokersNeeded: number;
 }
 
-export interface MahjongCheckOptions {
+export interface WinningHandOptions {
+	// House rule: treat concealed-only hands as winnable even after the seat has exposed. The
+	// concealed designation exists to justify a higher point value, so groups that don't track
+	// score have no reason to enforce it.
+	allowConcealed?: boolean;
+}
+
+export interface MahjongCheckOptions extends WinningHandOptions {
 	// The tile being claimed off a discard. Omit for a self-draw check.
 	fromDiscard?: Tile;
 }

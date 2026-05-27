@@ -174,7 +174,7 @@ The system rejects three families explicitly. It rejects **casino chrome** (gamb
 
 - **Paper-tinted neutrals.** Every surface is tinted toward warm yellow (hue 80) at very low chroma (0.004–0.010), giving an off-white "paper" feel without anyone consciously noticing.
 - **Hairlines do structural work.** Borders are 1px. Anything thicker is state, not decoration.
-- **Tile glyphs as typography.** Tiles are rendered as flat 2D faces with canonical CJK suit characters (萬 / 索 / 筒) — the same vocabulary the user sees at the table.
+- **Tile glyphs as typography (default).** Tiles are rendered as flat 2D faces. The default suit-mark is the canonical CJK character (萬 / 索 / 筒) — the same vocabulary the user sees at the table — and the mark is user-selectable between CJK glyphs (default) and Western American labels (crak / bam / dot); both are flat and tinted by suit. A third **icon** style swaps the whole face for traditional tile artwork (see "Tile" below) — the sanctioned exception to the no-pictorial rule.
 - **The accent is a bookmark.** A single desaturated indigo carries every engine signal — suggested discard, pinned target, focus ring. Used on ≤10% of any screen.
 - **Asymmetric rhythm.** The hand row breathes; peripheral regions (discards, opponents) cluster tighter.
 
@@ -280,7 +280,8 @@ Components are described by their character and exact treatment. Every component
 - **Shape:** rounded rectangle, radius `6px` at `md` / `lg` sizes, `4–5px` at smaller sizes. Aspect ratio approximately 3:4.
 - **Sizes:** `xs` (22×30px, palette mini), `sm` (30×40px, discards/opponent exposures), `md` (42×56px, self exposures), `lg` (54×72px, concealed hand).
 - **Face composition:**
-  - Number tiles: large numeral on top half (colored by suit), small CJK suit-mark on bottom half (萬 / 索 / 筒).
+  - Number tiles (CJK / Western styles): large numeral on top half (colored by suit), small suit-mark on bottom half — CJK glyph (萬 / 索 / 筒, default) or Western label (crak / bam / dot), both inheriting the suit color via `currentColor`.
+  - **Icon style** (the third tile style): the whole face becomes a traditional tile illustration — craks as a Chinese numeral over 萬, bamboo as N sticks (1-bamboo is the bird), dots as N circles — plus winds and dragons. These are vendored CC0 riichi faces (`src/lib/assets/tiles/riichi/`, from FluffyStuff) recolored **two-tone** at runtime (`tileGlyph.ts`): the figure → the suit token via `currentColor`, white areas → `--color-bg-raised` so background-white reads as the paper face and foreground-white reads as a paper highlight over the colored figure. The Arabic numeral is dropped; the glyph *is* the rank. Flowers and jokers have no riichi equivalent and keep their flat rendering. Detail is intentionally denser here and reads best at `md`/`lg`.
   - Winds: a single bold letter (N/E/S/W) at -0.04em tracking.
   - Dragons: CJK character (中 / 發) at the suit's color; white dragon as a thin-bordered blank box.
   - Flowers: a 4-petal SVG stroke in Petal Pink, on a tinted-warm background.
@@ -341,7 +342,7 @@ A signature pattern: a small dot (Margin Gray, 6px circle) + region title + a nu
 
 - **Do** keep every neutral tinted toward hue 80 at chroma 0.004–0.010. The paper feel depends on consistency.
 - **Do** use Bookmark Indigo only as engine signal: suggested discard, pinned target, focus ring, primary button. ≤10% of any screen.
-- **Do** render tiles as flat 2D faces with CJK suit-marks (萬 / 索 / 筒). The canonical glyphs are the cultural artifact; that's why they're loud.
+- **Do** render tiles as flat 2D faces by default. The CJK suit-marks (萬 / 索 / 筒) are the default and the cultural artifact; that's why they're loud. Western labels are an alternate flat, suit-tinted mark. The traditional-artwork **icon** style is the deliberate exception: real tile faces, but recolored two-tone into the suit palette so they still belong to the page rather than importing a foreign full-color look.
 - **Do** let hairlines (1px Ruled Line) do structural work. Thicker means state, never decoration.
 - **Do** render state (selected, focused, suggested) as a ring outside the element. The element's face never changes.
 - **Do** layer with tone (Aged Vellum / Paper White / Bleached Paper) before reaching for any shadow.
@@ -359,6 +360,6 @@ A signature pattern: a small dot (Margin Gray, 6px circle) + region title + a nu
 - **Don't** use gradient text (`background-clip: text` with a gradient background). Emphasis through weight or size, never gradients.
 - **Don't** reach for SaaS-dashboard metric cards (big number + label + up-arrow delta). Completion scores are hairline bars, not KPI tiles.
 - **Don't** style this like a casino app: no felt-green tables, no gold trim, no Vegas typography. This is a Reading Room, not a gambling table.
-- **Don't** style this like a toy mahjong solitaire app: no bright primaries, no cartoon tile faces, no confetti on win. The user is studying, not playing.
+- **Don't** style this like a toy mahjong solitaire app: no bright primaries, no confetti on win, no full-color cartoon tile faces. The user is studying, not playing. (The optional **icon** tile style is the one sanctioned exception — traditional tile artwork, but recolored two-tone into the suit palette, never the original loud multi-color art.)
 - **Don't** style this like Stockfish chess analyzers: the framing is inspirational, the aesthetic isn't. No arrow overlays, no board-geometry visualizations. Mahjong has no spatial structure to lean on.
-- **Don't** decorate with Asian-pastiche flourishes (bamboo backgrounds, dragon frames, calligraphic display fonts). The tiles already are the cultural artifact; surrounding them in cosplay cheapens them.
+- **Don't** decorate with Asian-pastiche flourishes (bamboo backgrounds, dragon frames, calligraphic display fonts). The tiles already are the cultural artifact; surrounding them in cosplay cheapens them. (The icon-style tile artwork lives *as* the tile face, recolored to the suit palette — it is the tile, not chrome decoration around it.)

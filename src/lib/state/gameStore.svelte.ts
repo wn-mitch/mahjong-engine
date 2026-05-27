@@ -2,6 +2,7 @@ import type { Tile } from '$lib/engine/tiles';
 import type { CharlestonDirection, GameState } from '$lib/engine/gameState';
 import type { ClaimOption, GameRuleset, TargetEvaluation } from '$lib/engine/ruleset';
 import { nmjl2026 } from '$lib/rulesets';
+import { houseRulesStore } from '$lib/state/houseRulesStore.svelte';
 import {
 	createMatch,
 	beginCharleston,
@@ -292,7 +293,8 @@ export function createGameStore(rulesetId: RulesetId = 'nmjl-2026', initialSeed?
 			match = draw(match, seat);
 		}
 		const view = seatView(match, seat);
-		if (ruleset.isLegalMahjong(view)) return endSelfDraw(seat);
+		if (ruleset.isLegalMahjong(view, { allowConcealed: houseRulesStore.allowConcealed }))
+			return endSelfDraw(seat);
 		const tile = agent.chooseDiscard(view, match.profiles[seat], match.rng);
 		match = applyDiscard(match, seat, tile);
 		record({ kind: 'discard', seat, tile });
@@ -309,7 +311,8 @@ export function createGameStore(rulesetId: RulesetId = 'nmjl-2026', initialSeed?
 
 	function declareMahjong() {
 		if (match.turn !== 0 || interaction.kind !== 'human-turn') return;
-		if (!ruleset.isLegalMahjong(seatView(match, 0))) return;
+		if (!ruleset.isLegalMahjong(seatView(match, 0), { allowConcealed: houseRulesStore.allowConcealed }))
+			return;
 		endSelfDraw(0);
 	}
 
@@ -321,7 +324,10 @@ export function createGameStore(rulesetId: RulesetId = 'nmjl-2026', initialSeed?
 		if (discarder !== 0) {
 			const v0 = seatView(match, 0);
 			options = ruleset.canClaimForExposure(v0, tile);
-			canMahjong = ruleset.isLegalMahjong(v0, { fromDiscard: tile });
+			canMahjong = ruleset.isLegalMahjong(v0, {
+				fromDiscard: tile,
+				allowConcealed: houseRulesStore.allowConcealed
+			});
 		}
 		if (options.length > 0 || canMahjong) {
 			claimOffer = { tile, discarder, options, canMahjong };
@@ -475,7 +481,9 @@ export function createGameStore(rulesetId: RulesetId = 'nmjl-2026', initialSeed?
 	const targets = $derived.by<TargetEvaluation[]>(() => {
 		if (!cardOpen) return [];
 		try {
-			return ruleset.evaluateTargets(humanView);
+			return ruleset.evaluateTargets(humanView, {
+				includeConcealed: houseRulesStore.allowConcealed
+			});
 		} catch {
 			return [];
 		}
@@ -534,7 +542,7 @@ export function createGameStore(rulesetId: RulesetId = 'nmjl-2026', initialSeed?
 			return (
 				match.turn === 0 &&
 				interaction.kind === 'human-turn' &&
-				ruleset.isLegalMahjong(humanView)
+				ruleset.isLegalMahjong(humanView, { allowConcealed: houseRulesStore.allowConcealed })
 			);
 		},
 		get revealed() {
@@ -563,6 +571,12 @@ export function createGameStore(rulesetId: RulesetId = 'nmjl-2026', initialSeed?
 		},
 		get targets() {
 			return targets;
+		},
+		get allowConcealed() {
+			return houseRulesStore.allowConcealed;
+		},
+		toggleAllowConcealed() {
+			houseRulesStore.toggleAllowConcealed();
 		},
 		seatLabel(seat: SeatId) {
 			return SEAT_LABELS[seat];
