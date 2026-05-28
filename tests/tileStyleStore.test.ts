@@ -8,17 +8,17 @@ describe('resolveInitialTileStyle', () => {
 		expect(resolveInitialTileStyle('icon')).toBe('icon');
 	});
 
-	it('falls back to cjk for an unrecognized or missing value', () => {
-		expect(resolveInitialTileStyle('sepia')).toBe('cjk');
-		expect(resolveInitialTileStyle('')).toBe('cjk');
-		expect(resolveInitialTileStyle(null)).toBe('cjk');
+	it('falls back to icon for an unrecognized or missing value', () => {
+		expect(resolveInitialTileStyle('sepia')).toBe('icon');
+		expect(resolveInitialTileStyle('')).toBe('icon');
+		expect(resolveInitialTileStyle(null)).toBe('icon');
 	});
 });
 
 describe('nextTileStyle', () => {
-	it('cycles cjk → western → icon → cjk', () => {
+	it('cycles icon → cjk → western → icon', () => {
+		expect(nextTileStyle('icon')).toBe('cjk');
 		expect(nextTileStyle('cjk')).toBe('western');
 		expect(nextTileStyle('western')).toBe('icon');
-		expect(nextTileStyle('icon')).toBe('cjk');
 	});
 });

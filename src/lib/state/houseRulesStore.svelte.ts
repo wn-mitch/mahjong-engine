@@ -4,9 +4,12 @@
 
 function detectAllowConcealed(): boolean {
 	try {
-		return localStorage.getItem('allow-concealed') === 'true';
+		const stored = localStorage.getItem('allow-concealed');
+		// Default to true: the engine surfaces concealed lines unless the user opts into standard
+		// "concealed lost on exposure" enforcement.
+		return stored === null ? true : stored === 'true';
 	} catch {
-		return false;
+		return true;
 	}
 }
 
