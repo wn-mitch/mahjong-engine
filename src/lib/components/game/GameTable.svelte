@@ -46,17 +46,18 @@
 
 <main
 	class="mx-auto grid gap-6 p-6 content-start max-sm:p-3 max-sm:gap-3
-	       max-lg:pb-[calc(3.5rem+env(safe-area-inset-bottom))]! {layout}"
+	       max-lg:pb-[calc(3.5rem+env(safe-area-inset-bottom))]!
+	       lg:flex-1 lg:min-h-0 lg:overflow-hidden lg:grid-rows-[minmax(0,1fr)] {layout}"
 >
 	{#if game.logOpen && desktop.matches}
-		<aside class="sticky top-6 self-start max-lg:static">
+		<aside class="lg:h-full lg:min-h-0 lg:overflow-y-auto">
 			<GameLog />
 		</aside>
 	{/if}
 
 	<!-- Card-table column: opponents → discards → hand as one tight cluster, top-aligned so the
 	     three columns share a top edge. The hand centers horizontally within the tray. -->
-	<div class="flex flex-col gap-4 min-w-0">
+	<div class="flex flex-col gap-4 min-w-0 lg:h-full lg:min-h-0 lg:overflow-y-auto">
 		{#if ended}
 			<EndBanner />
 		{/if}
@@ -81,7 +82,7 @@
 	</div>
 
 	{#if game.cardOpen && desktop.matches}
-		<aside class="sticky top-6 self-start max-h-[calc(100dvh-3rem)] overflow-y-auto max-lg:static max-lg:max-h-none">
+		<aside class="lg:h-full lg:min-h-0 lg:overflow-y-auto">
 			<CardTargets />
 		</aside>
 	{/if}

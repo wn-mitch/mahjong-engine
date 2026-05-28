@@ -21,7 +21,7 @@
 </script>
 
 <section
-	class="grid grid-rows-[auto_minmax(0,1fr)] gap-2 max-h-[calc(100dvh-3rem)] rounded-panel border border-line bg-bg-sunk overflow-hidden max-lg:max-h-[24rem]"
+	class="grid grid-rows-[auto_minmax(0,1fr)] gap-2 rounded-panel border border-line bg-bg-sunk overflow-hidden lg:h-full max-lg:max-h-[24rem]"
 >
 	<header class="flex items-center gap-2 px-4 pt-3">
 		<span class="w-[5px] h-[5px] rounded-full bg-ink-faint" aria-hidden="true"></span>

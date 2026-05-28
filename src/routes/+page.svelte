@@ -15,8 +15,9 @@
 	<title>mahjong-engine — play</title>
 </svelte:head>
 
+<div class="lg:flex lg:flex-col lg:h-dvh lg:overflow-hidden">
 <header
-	class="grid items-center gap-6 p-4 px-6 border-b border-line grid-cols-[auto_1fr] max-sm:px-4"
+	class="grid items-center gap-6 p-4 px-6 border-b border-line grid-cols-[auto_1fr] max-sm:px-4 lg:shrink-0"
 >
 	<div class="grid">
 		<span class="text-base font-semibold tracking-tight whitespace-nowrap">mahjong-engine</span>
@@ -96,3 +97,4 @@
 <GameTable />
 
 <MobileToolbar />
+</div>
