@@ -59,7 +59,7 @@
 	role="dialog"
 	aria-modal="true"
 	aria-label={label}
-	class="fixed inset-x-0 bottom-0 z-50 flex max-h-[80vh] flex-col rounded-t-panel
+	class="fixed inset-x-0 bottom-0 z-50 flex max-h-[80dvh] flex-col rounded-t-panel
 	       bg-bg-raised border-t border-line pb-[env(safe-area-inset-bottom)] focus:outline-none"
 	transition:fly={sheetMotion}
 >
@@ -74,7 +74,7 @@
 			Done
 		</button>
 	</div>
-	<div class="min-h-0 flex-1 overflow-y-auto px-3 pb-3">
+	<div class="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 pb-3">
 		{@render children()}
 	</div>
 </div>

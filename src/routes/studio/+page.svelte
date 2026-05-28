@@ -72,7 +72,7 @@
 	</section>
 
 	<aside
-		class="grid min-w-0 gap-3 content-start sticky top-6 max-h-[calc(100vh-3rem)] overflow-y-auto [grid-area:reasoning]
+		class="grid min-w-0 gap-3 content-start sticky top-6 max-h-[calc(100dvh-3rem)] overflow-y-auto [grid-area:reasoning]
 		       max-lg:static max-lg:max-h-none max-lg:overflow-visible"
 	>
 		<EngineSuggestion />

@@ -116,6 +116,11 @@
 		font-feature-settings: 'ss01', 'cv11';
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
+		overscroll-behavior: none;
+	}
+
+	body {
+		min-height: 100dvh;
 	}
 
 	button {

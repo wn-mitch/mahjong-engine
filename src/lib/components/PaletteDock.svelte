@@ -112,7 +112,7 @@
 			role="dialog"
 			aria-modal="true"
 			aria-label="Tile palette"
-			class="fixed inset-x-0 bottom-0 z-50 flex max-h-[68vh] flex-col rounded-t-panel
+			class="fixed inset-x-0 bottom-0 z-50 flex max-h-[68dvh] flex-col rounded-t-panel
 			       bg-bg-raised border-t border-line pb-[env(safe-area-inset-bottom)] focus:outline-none"
 			transition:fly={sheetMotion}
 		>
@@ -127,14 +127,14 @@
 					Done
 				</button>
 			</div>
-			<div class="min-h-0 flex-1 overflow-y-auto px-1 pb-2">
+			<div class="min-h-0 flex-1 overflow-y-auto overscroll-contain px-1 pb-2">
 				<TilePalette bare />
 			</div>
 		</div>
 	{/if}
 {:else}
 	<aside
-		class="sticky top-6 self-start max-h-[calc(100vh-3rem)] min-h-0 flex overflow-hidden [grid-area:palette]
+		class="sticky top-6 self-start max-h-[calc(100dvh-3rem)] min-h-0 flex overflow-hidden [grid-area:palette]
 		       [&>:global(.palette)]:flex-1 [&>:global(.palette)]:min-h-0 [&>:global(.palette)]:overflow-y-auto"
 	>
 		<TilePalette />

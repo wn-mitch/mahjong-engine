@@ -44,7 +44,10 @@
 	});
 </script>
 
-<main class="mx-auto grid gap-6 p-6 content-start max-sm:p-3 max-sm:gap-3 {layout}">
+<main
+	class="mx-auto grid gap-6 p-6 content-start max-sm:p-3 max-sm:gap-3
+	       max-lg:pb-[calc(3.5rem+env(safe-area-inset-bottom))]! {layout}"
+>
 	{#if game.logOpen && desktop.matches}
 		<aside class="sticky top-6 self-start max-lg:static">
 			<GameLog />
@@ -78,7 +81,7 @@
 	</div>
 
 	{#if game.cardOpen && desktop.matches}
-		<aside class="sticky top-6 self-start max-h-[calc(100vh-3rem)] overflow-y-auto max-lg:static max-lg:max-h-none">
+		<aside class="sticky top-6 self-start max-h-[calc(100dvh-3rem)] overflow-y-auto max-lg:static max-lg:max-h-none">
 			<CardTargets />
 		</aside>
 	{/if}
