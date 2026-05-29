@@ -297,7 +297,7 @@
 		display: block;
 		width: 100%;
 		height: 100%;
-		padding: 6%;
+		padding: 2%;
 		box-sizing: border-box;
 	}
 </style>
