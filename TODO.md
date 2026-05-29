@@ -35,6 +35,7 @@ Next steps queued for follow-up work. Roughly ordered by what unblocks the most 
 
 - [ ] Source or generate visual mahjong tile images (suits, winds, dragons, flowers, jokers)
 - [ ] Decide on license-compatible tile art (existing public-domain sets exist)
+- [ ] Design a real home-screen / PWA icon. Today `static/icon-source.svg` is a copy of the Svelte logo (the SvelteKit scaffold default), and all PWA icons under `static/` (`apple-touch-icon-180x180.png`, `pwa-{64,192,512}x*.png`, `maskable-icon-512x512.png`, `favicon.ico`) are generated from it via `pnpm icons:generate` (config in `pwa-assets.config.ts`). Replace the source SVG with a mahjong-flavored mark and regenerate.
 
 ## Tests
 

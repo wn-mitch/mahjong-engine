@@ -15,12 +15,15 @@
 	import CharlestonPanel from '$lib/components/CharlestonPanel.svelte';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import TileStyleToggle from '$lib/components/TileStyleToggle.svelte';
+	import AboutDialog from '$lib/components/AboutDialog.svelte';
 
 	import { createPositionStore } from '$lib/state/positionStore.svelte';
 	import { provideStore } from '$lib/state/context';
 
 	const store = createPositionStore();
 	provideStore(store);
+
+	let aboutOpen = $state(false);
 
 	onMount(() => {
 		if (page.url.searchParams.has('random') || page.url.searchParams.has('sample')) {
@@ -40,9 +43,18 @@
 	>
 		Play a hand →
 	</a>
+	<button
+		type="button"
+		class="text-xs font-semibold uppercase tracking-[0.1em] text-ink-soft hover:text-accent transition-colors duration-150"
+		onclick={() => (aboutOpen = true)}
+	>
+		About
+	</button>
 	<TileStyleToggle />
 	<ThemeToggle />
 </nav>
+
+<AboutDialog bind:open={aboutOpen} />
 
 <Selectors />
 
