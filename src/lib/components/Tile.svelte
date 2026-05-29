@@ -301,12 +301,17 @@
 		box-sizing: border-box;
 	}
 
-	/* Icon-mode tiles carry tiny "paper" gaps inside the recolored glyph (fill: var(--color-bg-raised))
-	   to read as negative space against the tile face. The button's hover state lifts the face one
-	   shade brighter; without this override the gaps would stay at the resting paper color and
-	   stand out as dirty pixels against the brighter hover face. Rebinding the token in the hover
-	   scope keeps the gaps locked to whatever the face currently is. */
+	/* Hover lifts the tile face to a fixed near-white "fresh page" color regardless of theme
+	   (see the inline hover:bg-[oklch(...)] above). Pin the ink and gap tokens to their light-
+	   theme values in the same scope so:
+	     - bg-raised: tiny "paper" gaps inside recolored glyphs follow the brighter face instead
+	       of standing out as dirty pixels against it.
+	     - ink / ink-soft: in dark mode the resting ink color is light, which would render
+	       winds and the white-dragon frame as white-on-white on the hovered face. Pinning ink
+	       to the light-theme value forces the glyph to flip dark so it stays legible. */
 	.tile:hover:not(:disabled) {
 		--color-bg-raised: oklch(0.995 0.004 80);
+		--color-ink: oklch(0.2 0.012 80);
+		--color-ink-soft: oklch(0.44 0.01 80);
 	}
 </style>
