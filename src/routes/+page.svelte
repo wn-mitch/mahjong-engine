@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { base } from '$app/paths';
+	import AboutDialog from '$lib/components/AboutDialog.svelte';
 	import GameTable from '$lib/components/game/GameTable.svelte';
 	import MobileToolbar from '$lib/components/game/MobileToolbar.svelte';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
@@ -9,6 +10,8 @@
 
 	const game = createGameStore('nmjl-2026');
 	provideGame(game);
+
+	let aboutOpen = $state(false);
 </script>
 
 <svelte:head>
@@ -89,6 +92,13 @@
 		>
 			Position studio →
 		</a>
+		<button
+			type="button"
+			class="text-xs font-semibold uppercase tracking-[0.1em] text-ink-soft hover:text-accent transition-colors duration-150"
+			onclick={() => (aboutOpen = true)}
+		>
+			About
+		</button>
 		<TileStyleToggle />
 		<ThemeToggle />
 	</nav>
@@ -98,3 +108,5 @@
 
 <MobileToolbar />
 </div>
+
+<AboutDialog bind:open={aboutOpen} />

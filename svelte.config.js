@@ -14,6 +14,11 @@ const config = {
 		// it's unset so dev/build/preview keep working at the root.
 		paths: {
 			base: process.env.BASE_PATH ?? ''
+		},
+		// vite-plugin-pwa owns the service worker (see vite.config.ts). Disable SvelteKit's
+		// auto-registration so the two don't fight over `/sw.js`.
+		serviceWorker: {
+			register: false
 		}
 	}
 };

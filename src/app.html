@@ -4,6 +4,21 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 		<meta name="text-scale" content="scale" />
+		<!-- Theme/manifest tints. `paper-white` token in DESIGN.md resolves to ~#fbfaf7 in sRGB —
+		     keep the two in sync if the palette changes. Dark mode variant follows. -->
+		<meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)" />
+		<meta name="theme-color" content="#1f1d1a" media="(prefers-color-scheme: dark)" />
+		<!-- iOS Safari ignores the web app manifest's display/orientation/name — these legacy
+		     Apple meta tags are still required for Add-to-Home-Screen standalone mode. -->
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+		<meta name="apple-mobile-web-app-title" content="Mahjong" />
+		<link rel="apple-touch-icon" href="%sveltekit.assets%/apple-touch-icon-180x180.png" />
+		<!-- The PWA manifest is emitted by vite-plugin-pwa into the build root. The app is
+		     `ssr = false` (see +layout.ts), so anything <svelte:head> would inject only lands after
+		     hydration — the link belongs in the prerendered shell instead. -->
+		<link rel="manifest" href="%sveltekit.assets%/manifest.webmanifest" />
 		<script>
 			(function () {
 				try {
