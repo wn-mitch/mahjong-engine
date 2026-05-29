@@ -300,4 +300,13 @@
 		padding: 2%;
 		box-sizing: border-box;
 	}
+
+	/* Icon-mode tiles carry tiny "paper" gaps inside the recolored glyph (fill: var(--color-bg-raised))
+	   to read as negative space against the tile face. The button's hover state lifts the face one
+	   shade brighter; without this override the gaps would stay at the resting paper color and
+	   stand out as dirty pixels against the brighter hover face. Rebinding the token in the hover
+	   scope keeps the gaps locked to whatever the face currently is. */
+	.tile:hover:not(:disabled) {
+		--color-bg-raised: oklch(0.995 0.004 80);
+	}
 </style>
