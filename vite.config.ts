@@ -3,8 +3,7 @@ import tailwindcss from '@tailwindcss/vite';
 import { SvelteKitPWA } from '@vite-pwa/sveltekit';
 import { defineConfig } from 'vitest/config';
 
-const base = process.env.BASE_PATH ?? '';
-const scope = base === '' ? '/' : `${base}/`;
+const scope = '/';
 const themeColor = '#fbfaf7';
 
 export default defineConfig({
