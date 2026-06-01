@@ -17,5 +17,5 @@ export default defineConfig({
 			resizeOptions: { fit: 'contain', background: paper }
 		}
 	},
-	images: ['static/icon-source.svg']
+	images: ['static/icon-source.png']
 });

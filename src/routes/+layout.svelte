@@ -1,5 +1,4 @@
 <script lang="ts">
-	import favicon from '$lib/assets/favicon.svg';
 	import InstallPrompt from '$lib/components/InstallPrompt.svelte';
 	import '../app.css';
 
@@ -27,7 +26,7 @@
 </script>
 
 <svelte:head>
-	<link rel="icon" href={favicon} />
+	<link rel="icon" href="/favicon.ico" />
 </svelte:head>
 
 {@render children()}
