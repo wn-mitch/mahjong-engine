@@ -1,17 +1,54 @@
 <script lang="ts">
 	import { base } from '$app/paths';
 	import AboutDialog from '$lib/components/AboutDialog.svelte';
+	import HowToPlayDialog from '$lib/components/HowToPlayDialog.svelte';
+	import PregameDialog from '$lib/components/PregameDialog.svelte';
+	import SettingsDialog from '$lib/components/SettingsDialog.svelte';
 	import GameTable from '$lib/components/game/GameTable.svelte';
 	import MobileToolbar from '$lib/components/game/MobileToolbar.svelte';
-	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
-	import TileStyleToggle from '$lib/components/TileStyleToggle.svelte';
-	import { createGameStore } from '$lib/state/gameStore.svelte';
+	import { createGameStore, type MatchConfig, type RulesetId } from '$lib/state/gameStore.svelte';
 	import { provideGame } from '$lib/state/gameContext';
+	import { houseRulesStore } from '$lib/state/houseRulesStore.svelte';
+	import { preferencesStore } from '$lib/state/preferences.svelte';
 
-	const game = createGameStore('nmjl-2026');
+	// Construct the initial match config from persisted prefs. A returning visitor lands in
+	// their last ruleset with a fresh deal; a first-run visitor still gets a default match
+	// behind the pregame dialog so the table renders immediately and isn't a void.
+	const initialConfig: MatchConfig = {
+		rulesetId: preferencesStore.lastRulesetId ?? 'nmjl-2026',
+		houseRules: { allowConcealed: houseRulesStore.allowConcealed }
+	};
+
+	const game = createGameStore(initialConfig);
 	provideGame(game);
 
+	// Show the pregame on first run (no last ruleset persisted) or whenever the user has
+	// opted into always-show. Otherwise the existing fresh deal stands.
+	let pregameOpen = $state(
+		preferencesStore.lastRulesetId === null || preferencesStore.alwaysShowPregame
+	);
+	let settingsOpen = $state(false);
 	let aboutOpen = $state(false);
+	let howtoOpen = $state(false);
+	let howtoRulesetId = $state<RulesetId>(initialConfig.rulesetId);
+
+	function startMatch(config: MatchConfig) {
+		preferencesStore.setLastRulesetId(config.rulesetId);
+		game.newGame(config);
+	}
+
+	function openHowto(id: RulesetId) {
+		howtoRulesetId = id;
+		howtoOpen = true;
+	}
+
+	function clickNewGame() {
+		if (preferencesStore.alwaysShowPregame || preferencesStore.lastRulesetId === null) {
+			pregameOpen = true;
+			return;
+		}
+		game.newGame({});
+	}
 </script>
 
 <svelte:head>
@@ -25,7 +62,7 @@
 	<div class="grid">
 		<span class="text-base font-semibold tracking-tight whitespace-nowrap">mahjong-engine</span>
 		<span class="text-xs font-semibold uppercase tracking-[0.12em] text-ink-faint max-sm:hidden">
-			NMJL 2026 · you vs three
+			{game.rulesetName} · you vs three
 		</span>
 	</div>
 	<nav class="flex flex-wrap items-center gap-x-4 gap-y-2 justify-self-end">
@@ -82,7 +119,7 @@
 		<button
 			type="button"
 			class="text-xs font-semibold uppercase tracking-[0.1em] text-ink-soft hover:text-ink transition-colors duration-150"
-			onclick={() => game.newGame()}
+			onclick={clickNewGame}
 		>
 			New game
 		</button>
@@ -94,13 +131,26 @@
 		</a>
 		<button
 			type="button"
-			class="text-xs font-semibold uppercase tracking-[0.1em] text-ink-soft hover:text-accent transition-colors duration-150"
-			onclick={() => (aboutOpen = true)}
+			class="inline-flex items-center justify-center text-ink-soft hover:text-accent transition-colors duration-150"
+			aria-label="Settings"
+			title="Settings"
+			onclick={() => (settingsOpen = true)}
 		>
-			About
+			<svg
+				width="16"
+				height="16"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				aria-hidden="true"
+			>
+				<circle cx="12" cy="12" r="3" />
+				<path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+			</svg>
 		</button>
-		<TileStyleToggle />
-		<ThemeToggle />
 	</nav>
 </header>
 
@@ -109,4 +159,19 @@
 <MobileToolbar />
 </div>
 
+<PregameDialog
+	bind:open={pregameOpen}
+	initial={{
+		rulesetId: game.rulesetId,
+		houseRules: { allowConcealed: houseRulesStore.allowConcealed }
+	}}
+	onstart={startMatch}
+	onhowto={openHowto}
+/>
+<SettingsDialog
+	bind:open={settingsOpen}
+	onhowto={() => openHowto(game.rulesetId)}
+	onabout={() => (aboutOpen = true)}
+/>
+<HowToPlayDialog bind:open={howtoOpen} rulesetId={howtoRulesetId} />
 <AboutDialog bind:open={aboutOpen} />

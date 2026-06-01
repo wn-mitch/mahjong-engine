@@ -81,7 +81,27 @@ function claimIsValid(
 	if (response.seat === discarder) return false; // can't claim your own discard
 	const view = seatView(match, response.seat);
 	if (response.kind === 'mahjong') return ruleset.isLegalMahjong(view, { fromDiscard: tile });
-	return ruleset.canClaimForExposure(view, tile).some((o) => o.kind === response.kind);
+	const options = ruleset.canClaimForExposure(view, tile);
+	if (response.kind === 'chow') {
+		// A chow response must match one of the offered chow options on its support tiles —
+		// otherwise the claimant could fabricate a sequence the hand can't actually back.
+		if (!response.support || response.support.length !== 2) return false;
+		return options.some(
+			(o) =>
+				o.kind === 'chow' &&
+				o.support !== undefined &&
+				o.support.length === 2 &&
+				supportMatches(o.support, response.support!)
+		);
+	}
+	return options.some((o) => o.kind === response.kind);
+}
+
+// Two two-tile supports match iff they're the same multiset of tiles.
+function supportMatches(a: Tile[], b: Tile[]): boolean {
+	if (a.length !== b.length) return false;
+	const { missing } = multisetDiff(a, b);
+	return missing.length === 0;
 }
 
 // Pull `need` supporting tiles from the hand for an exposure of `tile`: natural copies first,
@@ -103,6 +123,20 @@ function takeForExposure(
 	while (taken.length < need) {
 		const idx = rest.findIndex((t) => t.kind === 'joker');
 		if (idx < 0) throw new Error('hand cannot support the claimed exposure');
+		taken.push(rest[idx]);
+		rest.splice(idx, 1);
+	}
+	return { taken, rest };
+}
+
+// Pull the chosen chow support tiles out of the hand. Unlike pung/kong support, the two
+// tiles are specific (not duplicates of the claimed tile) and chosen by the claimant.
+function takeChowSupport(hand: Tile[], support: Tile[]): { taken: Tile[]; rest: Tile[] } {
+	const rest = [...hand];
+	const taken: Tile[] = [];
+	for (const want of support) {
+		const idx = rest.findIndex((t) => tileEquals(t, want));
+		if (idx < 0) throw new Error('hand cannot support the chow claim');
 		taken.push(rest[idx]);
 		rest.splice(idx, 1);
 	}
@@ -145,18 +179,49 @@ export function resolveClaimWindow(
 		};
 	}
 
-	const exposureResponses = valid.filter((r) => r.kind === 'pung' || r.kind === 'kong');
-	if (exposureResponses.length > 0) {
+	// Pung/kong outrank chow: a sequence can only form from the upstream seat anyway, but if
+	// any seat can pung/kong they win the tile first.
+	const pungKongResponses = valid.filter((r) => r.kind === 'pung' || r.kind === 'kong');
+	if (pungKongResponses.length > 0) {
 		const claimant = closestRight(
 			discarder,
-			exposureResponses.map((r) => r.seat)
+			pungKongResponses.map((r) => r.seat)
 		);
-		const kind = exposureResponses.find((r) => r.seat === claimant)!.kind as 'pung' | 'kong';
+		const kind = pungKongResponses.find((r) => r.seat === claimant)!.kind as 'pung' | 'kong';
 		const need = kind === 'pung' ? 2 : 3;
 		const { taken, rest } = takeForExposure(match.seats[claimant].hand, entry.tile, need);
 		const exposure: MatchExposure = {
 			tiles: [...taken, entry.tile],
 			kind,
+			calledFrom: discarder
+		};
+		const seats = withSeat(match, claimant, {
+			hand: rest,
+			exposures: [...match.seats[claimant].exposures, exposure]
+		}).seats;
+		const discards = match.discards.filter((_, i) => i !== discardIndex);
+		return {
+			...match,
+			seats,
+			discards,
+			claim: undefined,
+			turn: claimant,
+			turnCounter: match.turnCounter + 1
+		};
+	}
+
+	// Chow claims: only legal when the discarder is the upstream seat for the claimant. Since
+	// only one seat (the discarder's right neighbour) sits upstream-of-themselves, there can
+	// be at most one valid chow claimant in practice — no tie-break required.
+	const chowResponses = valid.filter((r) => r.kind === 'chow');
+	if (chowResponses.length > 0) {
+		const response = chowResponses[0];
+		const claimant = response.seat;
+		const support = response.support!;
+		const { taken, rest } = takeChowSupport(match.seats[claimant].hand, support);
+		const exposure: MatchExposure = {
+			tiles: [...taken, entry.tile],
+			kind: 'chow',
 			calledFrom: discarder
 		};
 		const seats = withSeat(match, claimant, {

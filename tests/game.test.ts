@@ -633,9 +633,11 @@ describe('bot agents', () => {
 	it('always claims a legal mahjong, and passes when nothing can be claimed', () => {
 		expect(
 			agent.chooseClaim(handState(WIN_MINUS_ONE), N('crack', 8), DEFAULT_BOT_PROFILE, () => 0.5)
+				.kind
 		).toBe('mahjong');
 		expect(
 			agent.chooseClaim(handState(rep(N('dot', 1), 13)), Dg('red'), DEFAULT_BOT_PROFILE, () => 0.5)
+				.kind
 		).toBe('pass');
 	});
 
@@ -650,9 +652,9 @@ describe('bot agents', () => {
 			N('crack', 3),
 			N('crack', 5)
 		];
-		expect(agent.chooseClaim(handState(hand), N('crack', 4), DEFAULT_BOT_PROFILE, () => 0.5)).toBe(
-			'pung'
-		);
+		expect(
+			agent.chooseClaim(handState(hand), N('crack', 4), DEFAULT_BOT_PROFILE, () => 0.5).kind
+		).toBe('pung');
 	});
 
 	it('plays a full all-bot game to completion, conserving the pool', () => {

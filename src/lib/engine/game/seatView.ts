@@ -55,6 +55,15 @@ export function seatView(match: Match, seat: SeatId): GameState {
 		}
 	}
 
+	// Surface the most recent discarder's viewer-relative position only while a claim window is
+	// open — that's when rulesets actually need it (Chinese chow gating). Outside the window,
+	// leaving it undefined avoids stale signals.
+	let lastDiscarder: GameState['lastDiscarder'];
+	if (match.claim) {
+		const entry = match.discards[match.claim.discardIndex];
+		if (entry) lastDiscarder = relativePosition(seat, entry.by);
+	}
+
 	return {
 		phase: PHASE_MAP[match.phase],
 		self: {
@@ -63,6 +72,7 @@ export function seatView(match: Match, seat: SeatId): GameState {
 		},
 		opponents,
 		discards: match.discards.map((d) => d.tile),
-		charleston: { passes }
+		charleston: { passes },
+		lastDiscarder
 	};
 }

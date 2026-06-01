@@ -7,7 +7,7 @@
 
 	const rulesetOptions: { id: RulesetId; label: string }[] = [
 		{ id: 'nmjl-2026', label: 'NMJL 2026' },
-		{ id: 'chinese-traditional', label: 'Chinese traditional' }
+		{ id: 'chinese-traditional', label: 'Chinese (modern HK)' }
 	];
 
 	const phaseOptions: { id: GamePhase; label: string }[] = [

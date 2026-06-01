@@ -17,10 +17,16 @@ Next steps queued for follow-up work. Roughly ordered by what unblocks the most 
 
 ## Engine — Chinese Traditional
 
-- [ ] Choose a regional variant to target first (Hong Kong / Taiwanese / Cantonese / mainland). Document choice in `docs/strategy/chinese-traditional.md`.
-- [ ] Implement generative hand enumeration in `ChineseTraditionalRuleset.evaluateTargets` — combinatorial search for 4 sets + 1 pair, with pruning
-- [ ] Encode fan/faan scoring rules in `src/lib/rulesets/chinese-traditional/scoring.ts`
-- [ ] Implement `isWinningHand` and `suggestDiscard`
+- [x] Choose a regional variant to target first (Hong Kong / Taiwanese / Cantonese / mainland). Document choice in `docs/strategy/chinese-traditional.md`. *Targeted: modern HK-style per https://themahjongline.com/pages/how-to-play-chinese-mahjong, plus a household three-suits scoring bonus.*
+- [x] Implement generative hand enumeration in `ChineseTraditionalRuleset.evaluateTargets` — combinatorial search for 4 sets + 1 pair, with pruning. Lives in `src/lib/rulesets/chinese-traditional/decomposer.ts` (memoized recursive partition) and `archetypes.ts` (filter-based pruning).
+- [x] Encode fan/faan scoring rules in `src/lib/rulesets/chinese-traditional/scoring.ts` — point table per the linked source plus the household three-suits bonus and tunable Pure Suit / Half Flush values.
+- [x] Implement `isWinningHand` and `suggestDiscard`.
+- [ ] Scoring-mode parity for NMJL. The Chinese ruleset already ranks by score; NMJL still ranks purely by completion. Surface a UI toggle that switches both rulesets between "completion" and "scoring" sort orders.
+- [ ] Charleston-UI hiding when the active ruleset has no Charleston (Chinese ruleset's `suggestCharlestonPass` already returns a no-op but the UI still shows the panel).
+- [ ] Seat/round wind UI control. `GameState` now carries optional `seatWind`/`roundWind`; expose pickers so players can set them when scoring honor pungs.
+- [ ] Tile-pool tracker integration with the Chinese discard heuristic — downgrade tiles that are statistically unreachable in the remaining wall.
+- [ ] Rare archetypes: Seven Pairs (七对子), All Terminals, Greater/Lesser Sequence, Thirteen Orphans. Add as new `archetypes.ts` entries.
+- [ ] `GameRuleset` implementation for the Chinese ruleset — `dealCounts`, empty `charlestonPlan`, `canClaimForExposure` (pung/kong from anyone; chow only on your turn), `isLegalExposure`, `isLegalMahjong`. Needed only when the app grows beyond advisor mode.
 
 ## UI — Svelte components
 
@@ -42,12 +48,12 @@ Next steps queued for follow-up work. Roughly ordered by what unblocks the most 
 - [ ] Tile equality + counting tests
 - [ ] Game-state construction tests
 - [ ] NMJL hand-distance computation tests (once `evaluateTargets` lands)
-- [ ] Chinese hand enumeration tests
+- [x] Chinese hand enumeration tests — `tests/chinese-{decomposer,archetypes,scoring,ruleset}.test.ts`.
 - [ ] Vitest coverage report setup
 
 ## Docs
 
-- [ ] Write the Chinese traditional strategy guide (currently a placeholder)
+- [x] Write the Chinese traditional strategy guide — `docs/strategy/chinese-traditional.md` filled out with the variant, point table, and house-rule extension.
 - [ ] Add per-year NMJL ruleset onboarding doc (how to add a new card year)
 - [ ] Document the joker-substitution algorithm once implemented
 

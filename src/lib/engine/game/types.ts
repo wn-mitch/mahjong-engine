@@ -13,7 +13,7 @@ export type MatchPhase = 'deal' | 'charleston' | 'play' | 'ended';
 // gameState.ts. `seatView` translates these into the relative form the ruleset expects.
 export interface MatchExposure {
 	tiles: Tile[];
-	kind: 'pung' | 'kong';
+	kind: 'pung' | 'kong' | 'chow';
 	calledFrom?: SeatId; // omitted for a concealed kong assembled from one's own draws
 }
 
@@ -22,7 +22,7 @@ export interface SeatPrivate {
 	exposures: MatchExposure[];
 }
 
-export type ClaimKind = 'pung' | 'kong' | 'mahjong';
+export type ClaimKind = 'pung' | 'kong' | 'chow' | 'mahjong';
 
 export interface DiscardEntry {
 	tile: Tile;
@@ -37,6 +37,10 @@ export type ClaimResponseKind = ClaimKind | 'pass';
 export interface ClaimResponse {
 	seat: SeatId;
 	kind: ClaimResponseKind;
+	// For chow claims, the two natural tiles from the claimant's hand that combine with the
+	// discarded tile to form the sequence. Required for chow (since a discard may complete
+	// more than one chow); ignored for pung/kong/mahjong/pass.
+	support?: Tile[];
 }
 
 // The interrupt state the runner sits in after a discard: every other seat owes a response

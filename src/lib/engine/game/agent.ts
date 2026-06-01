@@ -10,6 +10,14 @@ import type { BehaviorProfile, ClaimResponse, ClaimResponseKind, Match, SeatId, 
 
 const HAND_WHEN_ACTING = 14;
 
+// What a bot decides for an open claim window: the kind of claim (or pass) plus, for chow,
+// which specific completion to use. The runner turns this into a full `ClaimResponse` by
+// attaching the seat.
+export interface ClaimDecision {
+	kind: ClaimResponseKind;
+	support?: Tile[];
+}
+
 // A seat's decision-maker. Methods receive only the seat's projected view, never the full
 // match, so an agent physically cannot consult hidden tiles.
 export interface Agent {
@@ -19,7 +27,7 @@ export interface Agent {
 		discard: Tile,
 		profile: BehaviorProfile,
 		rng: () => number
-	): ClaimResponseKind;
+	): ClaimDecision;
 	chooseCharlestonPass(
 		view: GameState,
 		direction: CharlestonDirection,
@@ -53,14 +61,14 @@ export function botAgent(ruleset: GameRuleset): Agent {
 			return best;
 		},
 
-		chooseClaim(view, discard, profile, rng) {
-			if (ruleset.isLegalMahjong(view, { fromDiscard: discard })) return 'mahjong';
+		chooseClaim(view, discard, profile, rng): ClaimDecision {
+			if (ruleset.isLegalMahjong(view, { fromDiscard: discard })) return { kind: 'mahjong' };
 
 			// Very weak players rarely call at all.
-			if (profile.skill < 0.2 && rng() > profile.skill) return 'pass';
+			if (profile.skill < 0.2 && rng() > profile.skill) return { kind: 'pass' };
 
 			const options = ruleset.canClaimForExposure(view, discard);
-			if (options.length === 0) return 'pass';
+			if (options.length === 0) return { kind: 'pass' };
 
 			// Claim only if acquiring the tile improves the top hand by more than a threshold that
 			// shrinks as call-aggression rises (aggressive bots pounce on smaller gains). Adding
@@ -72,11 +80,17 @@ export function botAgent(ruleset: GameRuleset): Agent {
 			};
 			const after = ruleset.evaluateTargets(withTile)[0]?.completionScore ?? 0;
 			const threshold = (1 - profile.callAggression) * 0.05;
-			if (after - before <= threshold) return 'pass';
+			if (after - before <= threshold) return { kind: 'pass' };
 
-			// Prefer a kong only when it costs no jokers; otherwise a pung conserves wildcards.
+			// Prefer a kong only when it costs no jokers; otherwise a pung conserves wildcards;
+			// chow is the lowest-priority shape (only fires when neither pung/kong applies).
 			const freeKong = options.find((o) => o.kind === 'kong' && o.jokersNeeded === 0);
-			return freeKong ? 'kong' : 'pung';
+			if (freeKong) return { kind: 'kong' };
+			const pung = options.find((o) => o.kind === 'pung');
+			if (pung) return { kind: 'pung' };
+			const chow = options.find((o) => o.kind === 'chow');
+			if (chow) return { kind: 'chow', support: chow.support };
+			return { kind: 'pass' };
 		},
 
 		chooseCharlestonPass(view, direction, profile, rng) {
@@ -122,10 +136,10 @@ export function stepWithBots(match: Match, agent: Agent, ruleset: GameRuleset): 
 	m = applyDiscard(m, seat, tile);
 
 	const discardTile = m.discards[m.claim!.discardIndex].tile;
-	const responses: ClaimResponse[] = m.claim!.pending.map((s) => ({
-		seat: s,
-		kind: agent.chooseClaim(seatView(m, s), discardTile, m.profiles[s], m.rng)
-	}));
+	const responses: ClaimResponse[] = m.claim!.pending.map((s) => {
+		const decision = agent.chooseClaim(seatView(m, s), discardTile, m.profiles[s], m.rng);
+		return { seat: s, kind: decision.kind, support: decision.support };
+	});
 	return resolveClaimWindow(m, ruleset, responses);
 }
 

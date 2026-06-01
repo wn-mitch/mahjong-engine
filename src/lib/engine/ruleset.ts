@@ -88,14 +88,18 @@ export interface CharlestonStep {
 	optional: boolean;
 }
 
-export type ExposureKind = 'pung' | 'kong';
+export type ExposureKind = 'pung' | 'kong' | 'chow';
 
 // A way the seat could claim the discard to form an exposure. `jokersNeeded` is how many of
-// the supporting tiles must be jokers given the seat prefers its natural copies.
+// the supporting tiles must be jokers given the seat prefers its natural copies. `support`
+// is set only for chow options — the two specific natural tiles from the hand that would
+// pair with the claimed tile to form the sequence. Pung/kong derive their support from
+// `tile` directly so `support` is omitted.
 export interface ClaimOption {
 	kind: ExposureKind;
 	tile: Tile;
 	jokersNeeded: number;
+	support?: Tile[];
 }
 
 export interface WinningHandOptions {
@@ -115,7 +119,7 @@ export interface GameRuleset extends Ruleset {
 	charlestonPlan(): CharlestonStep[];
 	// Which exposures (if any) the seat could legally form by claiming `discard`.
 	canClaimForExposure(state: GameState, discard: Tile): ClaimOption[];
-	// Whether `tiles` (supporting tiles + the claimed tile) form a legal pung/kong exposure.
+	// Whether `tiles` (supporting tiles + the claimed tile) form a legal pung/kong/chow exposure.
 	isLegalExposure(tiles: Tile[], claimedTile: Tile, state: GameState): boolean;
 	// Whether the seat may declare mahjong now — on a self-draw, or by claiming a discard.
 	isLegalMahjong(state: GameState, opts?: MahjongCheckOptions): boolean;

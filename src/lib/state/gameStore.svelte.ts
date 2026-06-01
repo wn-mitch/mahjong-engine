@@ -1,7 +1,7 @@
 import type { Tile } from '$lib/engine/tiles';
 import type { CharlestonDirection, GameState } from '$lib/engine/gameState';
 import type { ClaimOption, GameRuleset, TargetEvaluation } from '$lib/engine/ruleset';
-import { nmjl2026 } from '$lib/rulesets';
+import { chineseTraditional, nmjl2026 } from '$lib/rulesets';
 import { houseRulesStore } from '$lib/state/houseRulesStore.svelte';
 import {
 	createMatch,
@@ -19,6 +19,7 @@ import {
 	relativePosition
 } from '$lib/engine/game';
 import type {
+	Agent,
 	ClaimResponse,
 	ClaimResponseKind,
 	Match,
@@ -27,7 +28,16 @@ import type {
 	SeatPrivate
 } from '$lib/engine/game';
 
-export type RulesetId = 'nmjl-2026';
+export type RulesetId = 'nmjl-2026' | 'chinese-traditional';
+
+// Per-match configuration. Consumed by `createGameStore` and `newGame`. Persistent app prefs
+// (theme, default ruleset) live in `preferencesStore`; this struct only describes the choices
+// that define *this* match.
+export interface MatchConfig {
+	rulesetId: RulesetId;
+	seed?: number;
+	houseRules: { allowConcealed: boolean };
+}
 
 // The interaction sub-state layered over `match.phase`. `match.phase` says where the rules
 // are; this says what the *human* is being asked for right now.
@@ -62,15 +72,20 @@ export type GameEvent =
 	  }
 	| { id: number; kind: 'draw'; seat: SeatId; tile: Tile }
 	| { id: number; kind: 'discard'; seat: SeatId; tile: Tile }
-	| { id: number; kind: 'claim'; seat: SeatId; tile: Tile; as: 'pung' | 'kong' | 'mahjong' }
+	| { id: number; kind: 'claim'; seat: SeatId; tile: Tile; as: 'pung' | 'kong' | 'chow' | 'mahjong' }
 	| { id: number; kind: 'end'; result: MatchResult };
 
 // A GameEvent without its `id`, distributed across the union so each member keeps its own
 // fields — a plain `Omit<GameEvent, 'id'>` would collapse to the shared `kind` key only.
 type NewEvent = GameEvent extends infer E ? (E extends GameEvent ? Omit<E, 'id'> : never) : never;
 
-const RULESETS: Record<RulesetId, GameRuleset> = { 'nmjl-2026': nmjl2026 };
+const RULESETS: Record<RulesetId, GameRuleset> = {
+	'nmjl-2026': nmjl2026,
+	'chinese-traditional': chineseTraditional
+};
 const BOT_DELAY_MS = 700;
+// Both supported rulesets deal 13+1; the dealer draws to 14 by deal time and acts. A
+// non-14-tile ruleset would need this to come from `ruleset.dealCounts()` instead.
 const HAND_WHEN_ACTING = 14;
 
 const SEAT_LABELS = ['You', 'Right', 'Across', 'Left'] as const;
@@ -83,11 +98,28 @@ function randomSeed(): number {
 	return Math.floor(Math.random() * 0x7fffffff);
 }
 
-export function createGameStore(rulesetId: RulesetId = 'nmjl-2026', initialSeed?: number) {
-	const ruleset = RULESETS[rulesetId];
-	const agent = botAgent(ruleset);
+function normalizeArg(arg: RulesetId | MatchConfig, seed?: number): MatchConfig {
+	if (typeof arg === 'string') {
+		return {
+			rulesetId: arg,
+			seed,
+			houseRules: { allowConcealed: houseRulesStore.allowConcealed }
+		};
+	}
+	return arg;
+}
 
-	let match = $state<Match>(freshMatch(initialSeed ?? randomSeed()));
+export function createGameStore(
+	arg: RulesetId | MatchConfig = 'nmjl-2026',
+	initialSeed?: number
+) {
+	let config: MatchConfig = normalizeArg(arg, initialSeed);
+
+	let ruleset: GameRuleset = RULESETS[config.rulesetId];
+	let agent: Agent = botAgent(ruleset);
+	let plan = ruleset.charlestonPlan();
+
+	let match = $state<Match>(freshMatch(config.seed ?? randomSeed(), config.rulesetId));
 	let interaction = $state<Interaction>({ kind: 'idle' });
 	let planCursor = $state(0);
 	let votedSecond = $state(false);
@@ -124,11 +156,15 @@ export function createGameStore(rulesetId: RulesetId = 'nmjl-2026', initialSeed?
 	// it was scheduled under and bails if it no longer matches.
 	let generation = 0;
 
-	function freshMatch(seed: number): Match {
-		return beginCharleston(createMatch({ rulesetId, seed, dealer: 0 }));
+	function freshMatch(seed: number, rulesetId: RulesetId): Match {
+		const r = RULESETS[rulesetId];
+		const m = createMatch({ rulesetId, seed, dealer: 0, dealCounts: r.dealCounts() });
+		// Empty charleston plan = skip the phase entirely; jump straight to play with the dealer
+		// holding their 14th tile, ready to discard.
+		return r.charlestonPlan().length > 0
+			? beginCharleston(m)
+			: { ...m, phase: 'play', turn: m.dealer };
 	}
-
-	const plan = ruleset.charlestonPlan();
 
 	// ---- charleston ------------------------------------------------------------------------
 
@@ -138,7 +174,8 @@ export function createGameStore(rulesetId: RulesetId = 'nmjl-2026', initialSeed?
 
 	function enterCharlestonStep() {
 		passIndices = [];
-		if (planCursor >= plan.length) {
+		// Rulesets without a charleston (empty plan) fall through to live play immediately.
+		if (plan.length === 0 || planCursor >= plan.length) {
 			enterPlay();
 			return;
 		}
@@ -337,23 +374,30 @@ export function createGameStore(rulesetId: RulesetId = 'nmjl-2026', initialSeed?
 		}
 	}
 
-	function respondToClaim(kind: ClaimResponseKind) {
+	function respondToClaim(kind: ClaimResponseKind, option?: ClaimOption) {
 		if (interaction.kind !== 'claim') return;
-		resolveClaim(kind);
+		resolveClaim(kind, option);
 	}
 
-	function resolveClaim(humanKind: ClaimResponseKind) {
+	function resolveClaim(humanKind: ClaimResponseKind, humanOption?: ClaimOption) {
 		const claim = match.claim;
 		if (!claim) return;
 		const entry = match.discards[claim.discardIndex];
 		const responses: ClaimResponse[] = [];
-		if (humanKind !== 'pass') responses.push({ seat: 0, kind: humanKind });
+		if (humanKind !== 'pass') {
+			const response: ClaimResponse = { seat: 0, kind: humanKind };
+			if (humanKind === 'chow' && humanOption?.support) response.support = humanOption.support;
+			responses.push(response);
+		}
 		for (const s of claim.pending) {
 			if (s === 0) continue; // the human's response is supplied above
-			responses.push({
-				seat: s,
-				kind: agent.chooseClaim(seatView(match, s), entry.tile, match.profiles[s], match.rng)
-			});
+			const decision = agent.chooseClaim(
+				seatView(match, s),
+				entry.tile,
+				match.profiles[s],
+				match.rng
+			);
+			responses.push({ seat: s, kind: decision.kind, support: decision.support });
 		}
 		// resolveClaimWindow removes the claimed entry from the pile on both an exposure claim and
 		// a mahjong-from-discard; an all-pass leaves the pile untouched. Use that to log who claimed.
@@ -380,9 +424,26 @@ export function createGameStore(rulesetId: RulesetId = 'nmjl-2026', initialSeed?
 
 	// ---- top-level controls ----------------------------------------------------------------
 
-	function newGame(seed?: number) {
-		generation += 1; // cancel any pending bot tick
-		match = freshMatch(seed ?? randomSeed());
+	function newGame(partial?: Partial<MatchConfig> | number) {
+		// Back-compat: a bare number is interpreted as a seed override (existing test shape).
+		const update: Partial<MatchConfig> =
+			typeof partial === 'number' ? { seed: partial } : (partial ?? {});
+		config = {
+			...config,
+			...update,
+			houseRules: { ...config.houseRules, ...(update.houseRules ?? {}) }
+		};
+		if (update.houseRules?.allowConcealed !== undefined) {
+			houseRulesStore.setAllowConcealed(update.houseRules.allowConcealed);
+		}
+		// Rebind ruleset-derived bindings *before* dealing — the new match needs the new
+		// ruleset's dealCounts/charleston plan/bot agent.
+		ruleset = RULESETS[config.rulesetId];
+		agent = botAgent(ruleset);
+		plan = ruleset.charlestonPlan();
+
+		generation += 1; // cancel any pending bot tick from the old match
+		match = freshMatch(update.seed ?? randomSeed(), config.rulesetId);
 		planCursor = 0;
 		votedSecond = false;
 		passIndices = [];
@@ -490,6 +551,14 @@ export function createGameStore(rulesetId: RulesetId = 'nmjl-2026', initialSeed?
 	});
 
 	return {
+		// Reads through `match` (which is $state-backed) so the page subtitle reactively
+		// updates when newGame switches rulesets.
+		get rulesetId(): RulesetId {
+			return match.rulesetId as RulesetId;
+		},
+		get rulesetName(): string {
+			return RULESETS[match.rulesetId as RulesetId].name;
+		},
 		get phase() {
 			return match.phase;
 		},
