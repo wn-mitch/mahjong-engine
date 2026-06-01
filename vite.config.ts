@@ -16,7 +16,7 @@ export default defineConfig({
 			scope,
 			base: scope,
 			kit: { spa: true },
-			includeAssets: ['favicon.ico', 'apple-touch-icon-180x180.png', 'icon-source.svg'],
+			includeAssets: ['favicon.ico', 'apple-touch-icon-180x180.png', 'icon-source.png'],
 			manifest: {
 				id: scope,
 				name: 'Mahjong Engine',
